@@ -26,7 +26,7 @@ router.post('/wallet/create', [middleware.mnemonic], function(req, res, next) {
 		response.privateKey = wallet._privKey.toString('hex')
 
 
-		let _password = '123456789';
+		let _password = req.body.password || '123456789';
 		let opts = {}
 		response.keyStore = myetherwallet.toV3(response.address, _password, response.privateKey);
 

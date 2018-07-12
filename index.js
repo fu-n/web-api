@@ -6,7 +6,7 @@ const fileUpload = require('express-fileupload');
 const app = express();
 const Transaction = require('ethereumjs-tx')
 const bodyParser = require('body-parser');
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8088;
 const path = require('path')
 const cors = require('cors')
 
@@ -28,9 +28,12 @@ var walletRoutes = require('./routes/wallets');
 var txRoutes = require('./routes/txs');
 
 app.use('/api',[], [walletRoutes,txRoutes]);
-// app.get('*', (req, res) => {
-//     res.sendFile(path.resolve(__dirname,'./build', 'index.html'));
-// });
+
+app.get('/', function (req, res, next) {
+  res.sendfile('./public/index.html')
+})
+
+app.use(express.static('public'))
 
 app.listen(port, function () {
   console.log('NANJ SDK listening on port ' + port + '!');
