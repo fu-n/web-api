@@ -13,13 +13,13 @@
               <ul class="nav d-none d-md-block">
                   <li><a href="https://nanjcoin.com" target="_blank">ABOUT</a></li>
                   <li><a href="" @click="showCreateWalletForm($event)">Create Wallet</a></li>
-                  <li><a href="" @click="showCreateWalletForm($event)">Import Wallet</a></li>
-                  <li><a href="" @click="showCreateWalletForm($event)">Transaction</a></li>
+                  <li><a href="" @click="showImportWalletForm($event)">Import Wallet</a></li>
+                  <li><a href="" @click="makeTransaction($event)">Transaction</a></li>
               </ul>
           </div>
       </div>
 
-      <div class="row" id="content-home">
+      <div class="row" id="content-home" v-if="is_home">
           <div class="col-lg-12 fv">
               <div class="text">
                 <h2><span>NANJ</span><span>COIN</span><span>SDK</span></h2>
@@ -33,8 +33,11 @@
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-8">
-            <div class="create-wallet-form">
+            <div v-if="is_create">
               <create-wallet></create-wallet>
+            </div>
+            <div v-if="is_import">
+              <import-wallet></import-wallet>
             </div>
           </div>
         </div>
@@ -47,17 +50,29 @@
 
 <script>
   import CreateWallet from './CreateWallet.vue';
+  import ImportWallet from './ImportWallet.vue';
   export default {
     name: 'app',
     data() {
-      return {}
+      return {
+        is_home: true,
+        is_create: false,
+        is_import: false
+      }
     },
-    components: {CreateWallet},
+    components: {CreateWallet, ImportWallet},
     methods: {
       showCreateWalletForm(event) {
         if (event) event.preventDefault();
-        $('#content-home').hide();
-        $('.create-wallet-form').show();
+        this.is_home = false;
+        this.is_create = true;
+        this.is_import = false;
+      },
+      showImportWalletForm(event) {
+        if (event) event.preventDefault();
+        this.is_home = false;
+        this.is_create = false;
+        this.is_import = true;
       }
     }
   }

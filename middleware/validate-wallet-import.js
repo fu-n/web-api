@@ -22,7 +22,9 @@ module.exports = function (req, res, next) {
 		// validate keystore 
 	    var derivedKey;
     	var kdfparams;
-	    if (keystore.crypto.kdf == 'pbkdf2') {
+    	if (typeof keystore.crypto == 'undefined') {
+    		return res.status(422).json({message: "Wallet format unknown or unsupported!"});
+    	} else if (keystore.crypto.kdf == 'pbkdf2') {
 	    	kdfparams = keystore.crypto.kdfparams
 	        if (kdfparams.prf != 'hmac-sha256') {
 	        	return res.status(422).json({message: "Unsupported parameters to PBKDF2"});
