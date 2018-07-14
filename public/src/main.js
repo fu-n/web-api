@@ -9,6 +9,10 @@ import 'bootstrap/dist/css/bootstrap.css';
 import Vue from 'vue'
 import App from './components/App.vue'
 
+import VuejsDialog from "vuejs-dialog"
+
+Vue.use(VuejsDialog)
+
 new Vue({
   el: 'app',
   created: function () {

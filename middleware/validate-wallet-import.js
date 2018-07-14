@@ -10,8 +10,23 @@ module.exports = function (req, res, next) {
 	if (req.files === null) {
 		return res.status(422).json({message: "Keystore is required."});
 	}
-	var file = req.files.keystore;
-	var keystore = JSON.parse(file.data.toString('ascii').toLowerCase());
+	
+	var jsonKeystore = null;
+	if (typeof req.files == 'undefined') {
+		if (typeof req.body.keystore == 'undefined') {
+			return res.status(422).json({message: "Keystore is required."});
+		}
+
+		jsonKeystore = req.body.keystore;
+	} else {
+		jsonKeystore = (typeof req.files.keystore == 'undefined')?null:req.files.keystore.data;
+	}
+
+	if (jsonKeystore === null) {
+		return res.status(422).json({message: "Keystore is required."});
+	}
+
+	var keystore = JSON.parse(jsonKeystore.toString('ascii').toLowerCase());
     var password = req.body.password;
 
 	if ((typeof keystore == "undefined") || (keystore.length == 0)) {

@@ -6,7 +6,7 @@
       <p class="mb-0"><strong>Well done!</strong> You successfully create new wallet.</p>
       <br>
       <ul>
-          <li><strong>Address: </strong>{{ myWallet.address }}</li>
+          <li><strong>Address: </strong>0x{{ myWallet.address }}</li>
           <li><strong>Public Key: </strong>{{ myWallet.publicKey }}</li>
           <li class="eye-txt-box">
             <strong>Private Key: </strong>
@@ -83,6 +83,12 @@
                 self.myWallet = response.data.data;
                 let obj = self.myWallet.keyStore;
                 self.myWallet.keyStoreDownload = 'data:'+"text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
+
+                // set to localStore
+                if (localStorage.getItem("nanjKeystore") !== null) {
+                  localStorage.removeItem('nanjKeystore')
+                }
+                localStorage.setItem('nanjKeystore', JSON.stringify(obj))
 
                 self.mnemonic = '';
                 self.password = '';

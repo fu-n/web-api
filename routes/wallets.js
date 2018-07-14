@@ -10,6 +10,7 @@ const ethUtil    = require('ethereumjs-util');
 const lightwallet = require('eth-lightwallet');
 const txutils = lightwallet.txutils;
 var myetherwallet = require('../assets/myetherwallet.js');
+var keythereum = require("keythereum");
 
 let middleware = {}
 middleware.mnemonic = require('../middleware/validate-mnemonic.js');
@@ -34,22 +35,38 @@ router.post('/wallet/create', [middleware.mnemonic], function(req, res, next) {
     });
 
 router.post('/wallet/import', [middleware.walletImport], function(req, res, next) {
-		var keythereum = require("keythereum");
+    	var jsonKeystore = null;
+    	if (typeof req.files == 'undefined') {
+    		jsonKeystore = req.body.keystore;
+    	} else {
+    		jsonKeystore = req.files.keystore.data;
+    	}
 
-    	let file = req.files.keystore;
-		let keystore = JSON.parse(file.data.toString('ascii').toLowerCase());
+		let keystore = JSON.parse(jsonKeystore.toString('ascii').toLowerCase());
     	let password = req.body.password;
 
+    	let kdfparams;
+    	if (keystore.crypto.kdf == 'pbkdf2') {
+	    	kdfparams = keystore.crypto.kdfparams
+	    } else if (keystore.crypto.kdf == 'scrypt') {
+	    	kdfparams = keystore.crypto.kdfparams;
+	    }
+
     	keythereum.recover(password, keystore, function (privateKey) {
-		  	let publicKey = ethUtil.privateToPublic(new Buffer(privateKey.toString('hex'), 'hex'));
+		  	// let publicKey = ethUtil.privateToPublic(new Buffer(privateKey.toString('hex'), 'hex'));
 
 		  	let response = {
-		  		address: '0x'+keystore.address,
-		  		publicKey: publicKey.toString('hex'),
+		  		address: keystore.address,
+		  		// publicKey: publicKey.toString('hex'),
 		  		privateKey: privateKey.toString('hex')
 		  	}
 
-		  	response.keyStore = myetherwallet.toV3(response.address, password, response.privateKey);
+		  	let opts = {
+		  		salt: kdfparams.salt,
+		  		iv: keystore.crypto.cipherparams.iv
+		  	}
+		  	
+		  	response.keyStore = keythereum.dump(password, response.privateKey, opts.salt, opts.iv)
 
 			return res.status(200).json({ statusCode: 200, message: 'Success.', data: response });
 		});

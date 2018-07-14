@@ -39,6 +39,9 @@
             <div v-if="is_import">
               <import-wallet></import-wallet>
             </div>
+            <div v-if="is_trans">
+              <transaction></transaction>
+            </div>
           </div>
         </div>
       </div>
@@ -51,28 +54,43 @@
 <script>
   import CreateWallet from './CreateWallet.vue';
   import ImportWallet from './ImportWallet.vue';
+  import Transaction from './Transaction.vue';
   export default {
     name: 'app',
     data() {
       return {
         is_home: true,
         is_create: false,
-        is_import: false
+        is_import: false,
+        is_trans: false
       }
     },
-    components: {CreateWallet, ImportWallet},
+    components: {CreateWallet, ImportWallet, Transaction},
     methods: {
       showCreateWalletForm(event) {
         if (event) event.preventDefault();
         this.is_home = false;
         this.is_create = true;
         this.is_import = false;
+        this.is_trans = false;
       },
       showImportWalletForm(event) {
         if (event) event.preventDefault();
         this.is_home = false;
         this.is_create = false;
         this.is_import = true;
+        this.is_trans = false;
+      },
+      makeTransaction(event) {
+        if (event) event.preventDefault();
+        if (localStorage.getItem("nanjKeystore") === null) {
+          this.$dialog.alert({title: 'Info', body: 'Please create or import your wallet!', buttonLabel: 'Yes'});
+          return;
+        }
+        this.is_home = false;
+        this.is_create = false;
+        this.is_import = false;
+        this.is_trans = true;
       }
     }
   }

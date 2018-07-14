@@ -6,7 +6,7 @@
       <p class="mb-0"><strong>Well done!</strong> You successfully import your wallet.</p>
       <br>
       <ul>
-          <li><strong>Address: </strong>{{ myWallet.address }}</li>
+          <li><strong>Address: </strong>0x{{ myWallet.address }}</li>
           <li><strong>Public Key: </strong>{{ myWallet.publicKey }}</li>
           <li class="eye-txt-box">
             <strong>Private Key: </strong>
@@ -62,10 +62,8 @@
       validate() {
           this.errors = [];
 
-          if(this.keystore && this.password) return true;
-
+          if(this.keystore) return true;
           if(!this.keystore) this.errors.push("The keystore is required.");
-          if(!this.password) this.errors.push("The password is required.");
           return false;
       },
       keystoreOnChange(e) {
@@ -94,6 +92,12 @@
                 self.myWallet = response.data.data;
                 let obj = self.myWallet.keyStore;
                 self.myWallet.keyStoreDownload = 'data:'+"text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
+
+                // set to localStore
+                if (localStorage.getItem("nanjKeystore") !== null) {
+                  localStorage.removeItem('nanjKeystore')
+                }
+                localStorage.setItem('nanjKeystore', JSON.stringify(obj))
 
                 self.formData = new FormData();
                 self.$refs.keystoreFile.value = '';
