@@ -35,6 +35,15 @@ app.get('/', function (req, res, next) {
 
 app.use(express.static('public'))
 
-app.listen(port, function () {
-  console.log('NANJ SDK listening on port ' + port + '!');
-})
+// app.listen(port, function () {
+//   console.log('NANJ SDK listening on port ' + port + '!');
+// })
+
+var server = app.listen(port, () => {
+	var host = server.address().address;
+	var port = server.address().port;
+
+	console.log('NANJ SDK listening at http://%s:%s', host, port);
+});
+
+module.exports = server
