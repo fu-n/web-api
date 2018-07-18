@@ -48,13 +48,14 @@
   import _ from 'lodash';
   import axios from 'axios';  
   import wallet from "./../wallet.js";
+  import lightwallet from 'eth-lightwallet';
 
   export default {
     data() {
       return {
         myWallet: {},
         errors: [],
-        mnemonic: '',
+        mnemonic: lightwallet.keystore.generateRandomSeed(),
         password: '',
       }
     },
