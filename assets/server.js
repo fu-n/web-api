@@ -50,9 +50,13 @@ module.exports = class {
 	    })
 	}
 
-	sentRelayTx(from,to,value,message) {
+	sentRelayTx(data, message) {
 		let postData = querystring.stringify({
-          'TxHash': hash
+          	'dest': data.dest,
+          	'data': data.data,
+          	'v': data.v,
+          	's': data.s,
+          	'hash': data.hash
         });
 		var options = {
 			host: process.env.NANJ_HOST,
