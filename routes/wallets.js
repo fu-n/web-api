@@ -10,11 +10,19 @@ const ethUtil    = require('ethereumjs-util');
 const lightwallet = require('eth-lightwallet');
 const txutils = lightwallet.txutils;
 var myetherwallet = require('../assets/myetherwallet.js');
+var generateData = require('../assets/generate-data-relayerTx.js')
 var keythereum = require("keythereum");
 
 let middleware = {}
 middleware.mnemonic = require('../middleware/validate-mnemonic.js');
 middleware.walletImport = require('../middleware/validate-wallet-import.js');
+
+router.get('/wallet/check', function(req, res, next) {
+		let response = {}
+		response.address = generateData.address(req.query.address)
+
+		return res.status(200).json({ statusCode: 200, message: 'Success.', data: response });
+    });
 
 router.post('/wallet/create', [middleware.mnemonic], function(req, res, next) {
     	let mnemonicPhrase = req.body.mnemonic_phrase
@@ -22,7 +30,7 @@ router.post('/wallet/create', [middleware.mnemonic], function(req, res, next) {
 		hdWallet.generateAddresses(1)
 		const { wallet } = hdWallet._children[0]
 		let response = {}
-		response.address = "0x" + wallet.getAddress().toString("hex")
+		response.address = generateData.address("0x" + wallet.getAddress().toString("hex"))
 		response.publicKey = wallet._pubKey.toString('hex')
 		response.privateKey = wallet._privKey.toString('hex')
 
@@ -56,7 +64,7 @@ router.post('/wallet/import', [middleware.walletImport], function(req, res, next
 		  	// let publicKey = ethUtil.privateToPublic(new Buffer(privateKey.toString('hex'), 'hex'));
 
 		  	let response = {
-		  		address: keystore.address,
+		  		address: generateData.address(keystore.address),
 		  		// publicKey: publicKey.toString('hex'),
 		  		privateKey: privateKey.toString('hex')
 		  	}

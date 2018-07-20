@@ -26,7 +26,6 @@ let metaNanjCoinManagerContractAddress = process.env.ADDRESS_META_NANJ_MANAGER
 let zeroAddress = "0x0000000000000000000000000000000000000000"
 
 const getAddressNanj = function (address) {
-    console.log(address)
     let NANJCOINManager = MetaNANJCOINManager.at(metaNanjCoinManagerContractAddress)
     let addressNanj = NANJCOINManager.getWallet.call(address)
     if (addressNanj == zeroAddress) {
@@ -101,7 +100,7 @@ const signPayload = async function (signingAddr, txRelay, whitelistOwner, destin
 }
 
 
-const generateDataRelayerTx = function(from, privKey, to, transferAmount) {
+const generateDataRelayerTx = async function(from, privKey, to, transferAmount) {
     let types = ['address', 'address', 'address', 'uint256', 'bytes', 'bytes32']
     let nanjTransferdata = encodeFunctionTxData('transfer', ['address', 'uint256'], [to, transferAmount])
 
@@ -111,6 +110,10 @@ const generateDataRelayerTx = function(from, privKey, to, transferAmount) {
     let data = nanjTransferdata    
 
     let txRELAY = TXRELAY.at(TXRELAYAddress)
+
+    //add accounts[0] to whitelist
+    await txRELAY.addToWhitelist([from,to])
+
     let params = [from, founderWallet, destination, value, data, sdkDeveloper.getAppHash()]
 
     return signPayload(from, txRELAY, zeroAddress, metaNanjCoinManagerContractAddress,
