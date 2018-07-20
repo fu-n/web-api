@@ -64,7 +64,7 @@ router.post('/wallet/import', [middleware.walletImport], function(req, res, next
 		  	// let publicKey = ethUtil.privateToPublic(new Buffer(privateKey.toString('hex'), 'hex'));
 
 		  	let response = {
-		  		address: generateData.address(keystore.address),
+		  		address: generateData.address('0x'+keystore.address),
 		  		// publicKey: publicKey.toString('hex'),
 		  		privateKey: privateKey.toString('hex')
 		  	}

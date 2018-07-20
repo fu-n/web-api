@@ -1,13 +1,13 @@
 <template>
   <div>
-    <h2 class="text-center">Create Wallet</h2>
+    <h2 class="text-center" v-html="titlePage">Create Wallet</h2>
     
     <div class="alert alert-success" v-if="Object.keys(myWallet).length > 0">
       <p class="mb-0"><strong>Well done!</strong> You successfully create new wallet.</p>
       <br>
       <ul>
-          <li><strong>Address: </strong>0x{{ myWallet.address }}</li>
-          <li><strong>Public Key: </strong>{{ myWallet.publicKey }}</li>
+          <li><strong>Address: </strong>{{ myWallet.address }}</li>
+          <!-- <li><strong>Public Key: </strong>{{ myWallet.publicKey }}</li> -->
           <li class="eye-txt-box">
             <strong>Private Key: </strong>
             <span class="txt-hide">***********************</span>
@@ -30,7 +30,7 @@
       </ul>
     </div>
 
-    <form @submit.prevent>
+    <form @submit.prevent v-if="Object.keys(myWallet).length <= 0">
       <div class="form-group">
         <textarea class="form-control" placeholder="Mnemonic Phrase" v-model="mnemonic">
         </textarea>
@@ -57,6 +57,7 @@
         errors: [],
         mnemonic: lightwallet.keystore.generateRandomSeed(),
         password: '',
+        titlePage: 'Create Wallet'
       }
     },
     methods: {
@@ -93,6 +94,8 @@
 
                 self.mnemonic = '';
                 self.password = '';
+                self.titlePage = 'Your wallet';
+                self.is_account = true;
               }
             })
             .catch(error => {
