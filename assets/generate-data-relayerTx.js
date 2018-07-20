@@ -12,15 +12,28 @@ const assert = require('assert')
 
 const TXRELAYABI = require('./abi/TXRELAYABI.json');
 const NanJABI = require('./abi/NanJABI.json');
+const MetaNANJCOINManagerABI = require('./abi/MetaNANJCOINManager.json');
 
+let MetaNANJCOINManager = web3.eth.contract(MetaNANJCOINManagerABI)
 let TXRELAY = web3.eth.contract(TXRELAYABI)
 let TXRELAYAddress = process.env.TXRELAY_ADDRESS
+
 
 
 let NANJCOINAddress = process.env.ADDRESS_NANJCOIN_TEST
 let nanjCoinFounder = process.env.ADDRESS_NANJ_FOUNDER
 let metaNanjCoinManagerContractAddress = process.env.ADDRESS_META_NANJ_MANAGER
 let zeroAddress = "0x0000000000000000000000000000000000000000"
+
+const getAddressNanj = function (address) {
+    console.log(address)
+    let NANJCOINManager = MetaNANJCOINManager.at(metaNanjCoinManagerContractAddress)
+    let addressNanj = NANJCOINManager.getWallet.call(address)
+    if (addressNanj == zeroAddress) {
+        return address
+    }
+    return addressNanj
+}
 
 const sdkDeveloper = {
   appId : process.env.CLIENT_ID,
@@ -100,33 +113,14 @@ const generateDataRelayerTx = function(from, privKey, to, transferAmount) {
     let txRELAY = TXRELAY.at(TXRELAYAddress)
     let params = [from, founderWallet, destination, value, data, sdkDeveloper.getAppHash()]
 
-    return new Promise(function(resolve, reject) {
-        let p = signPayload(from, txRELAY, zeroAddress, metaNanjCoinManagerContractAddress,
-          'forwardTo', types, params, new Buffer(privKey, 'hex')).then(function(result) {
-            // console.log(result)
-
-            var json = {
-                "dest": result.dest,
-                "data": result.data,
-                "v": result.v,
-                "r": result.r,
-                "s": result.s,
-                "hash": result.hash
-            }
-
-            resolve(json)
-        })
-        .catch(function(error) {
-            // console.log(error)
-            
-            reject(err)
-        })
-    })
+    return signPayload(from, txRELAY, zeroAddress, metaNanjCoinManagerContractAddress,
+          'forwardTo', types, params, new Buffer(privKey, 'hex'))
 }
 
 module.exports = {
     pad: pad,
     encodeFunctionTxData: encodeFunctionTxData,
     signPayload: signPayload,
+    address: getAddressNanj,
     generate: generateDataRelayerTx
 };
