@@ -131,7 +131,7 @@
           from: self.addFrom,
           to: self.addTo,
           value: self.sendAmount,
-          key: privKey
+          privKey: privKey
         };
 
         axios['post'](uri, data)

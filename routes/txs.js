@@ -1,4 +1,6 @@
 'use strict';
+var Web3 = require('web3')
+const web3 = new Web3(new Web3.providers.HttpProvider(process.env.HTTPP_ROVIDER))
 
 var express = require('express')
 var router = express.Router()
@@ -12,11 +14,37 @@ router.post('/tx/relayTx', async function (req, res, next) {
 		let appId = process.env.CLIENT_ID
 		let secretKey = process.env.SECRET_KEY
 	    let NanjServer = new server(appId, secretKey)
-		let data = await generateData.generate(req.body.from, req.body.privKey, req.body.to, req.body.value)
-		console.log(data)
-		await NanjServer.sentRelayTx(data, 'test SDK').then(function(result) {
-			return res.json(result)
-	    }, function(err) {
+
+	    // check balance 
+	    // let ethBalance = web3.eth.getBalance(req.body.from)
+    	// if (web3.fromWei(ethBalance) <= 0) {
+    	// 	return res.status(403).json({message: "Your ETH Amount not enought."});
+    	// }
+
+	    let founderWallet = await generateData.address(req.body.from)
+	    let balanceNanj = await generateData.getBalanceNanj(founderWallet)
+	    if (balanceNanj <= 0) {
+	    	return res.status(403).json({message: "Your NANJ Amount not enought."});
+	    }
+
+		let data = new Promise(function(resolve, reject) {
+			generateData.generate(req.body.from, req.body.privKey, req.body.to, req.body.value).then(function(result) {
+				resolve(result)
+			}, function(err) {
+				reject(err)
+			})
+		})
+
+		data.then(function(response) {
+
+			let _response = JSON.stringify(response)
+
+			NanjServer.sentRelayTx(_response, 'test SDK').then(function(result) {
+				return res.json(result)
+		    }, function(err) {
+				return res.json(err)
+		    })
+		}, function(err) {
 			return res.json(err)
 	    })
     })

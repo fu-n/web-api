@@ -37,7 +37,7 @@
       <div class="form-group">
         <input type="password" name="password" class="form-control" placeholder="Password" v-model="password">
       </div>
-      <button type="submit" class="btn btn-info" @click="importWallet">Submit</button>
+      <button type="submit" class="btn btn-info" @click="importWallet" :disabled="submitted == 1">Submit</button>
     </form>
   </div>
 </template>
@@ -56,7 +56,8 @@
         keystore: null,
         password: '',
         formData: new FormData(),
-        titlePage: 'Import Wallet'
+        titlePage: 'Import Wallet',
+        submitted: false
       }
     },
     methods: {
@@ -77,6 +78,7 @@
         this.formData.append('keystore', files[0]);
       },
       importWallet() {
+        this.submitted = true;
         this.myWallet = {};
         var valid = this.validate();
         var self = this;
@@ -112,12 +114,15 @@
               }
             })
             .catch(error => {
+              self.submitted = false;
               if (typeof error.response.data === 'object') {
                   self.errors = _.flatten(_.toArray(error.response.data));
               } else {
                   self.errors = ['Something went wrong. Please try again.'];
               }
             });
+        } else {
+          self.submitted = false;
         }
       },
       seeText(event) {
