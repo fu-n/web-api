@@ -77,7 +77,7 @@
     props: ['show'],
     data() {
       return {
-        keyStoreDownload: localStorage.getItem("nanjKeystore"),
+        keyStoreDownload: 'data:'+"text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(localStorage.getItem("nanjKeystore"))),
         is_home: true,
         is_create: false,
         is_import: false,

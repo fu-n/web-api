@@ -28,6 +28,10 @@ let zeroAddress = "0x0000000000000000000000000000000000000000"
 const getAddressNanj = async function (address) {
     let NANJCOINManager = MetaNANJCOINManager.at(metaNanjCoinManagerContractAddress)
     let addressNanj = await NANJCOINManager.getWallet.call(address)
+
+    console.log(address)
+    console.log(addressNanj)
+
     if (addressNanj == zeroAddress) {
         return address
     }

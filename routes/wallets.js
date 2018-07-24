@@ -19,9 +19,12 @@ middleware.walletImport = require('../middleware/validate-wallet-import.js');
 
 router.get('/wallet/check', function(req, res, next) {
 		let response = {}
-		response.address = req.query.address
-
-		return res.status(200).json({ statusCode: 200, message: 'Success.', data: response });
+		generateData.address(req.query.address).then(function(result) {
+			response.address = result;
+			return res.status(200).json({ statusCode: 200, message: 'Success.', data: response });
+	    }, function(err) {
+			return res.json(err)
+	    });
     });
 
 router.post('/wallet/create', [middleware.mnemonic], function(req, res, next) {

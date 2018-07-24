@@ -100,6 +100,10 @@
                 }
                 localStorage.setItem('nanjKeystore', JSON.stringify(obj))
 
+                if (localStorage.getItem("nanjAddress") !== null) {
+                  localStorage.removeItem('nanjAddress')
+                }
+
                 self.formData = new FormData();
                 self.$refs.keystoreFile.value = '';
                 self.password = '';
