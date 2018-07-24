@@ -14,20 +14,20 @@ const TXRELAYABI = require('./abi/TXRELAYABI.json');
 const NanJABI = require('./abi/NanJABI.json');
 const MetaNANJCOINManagerABI = require('./abi/MetaNANJCOINManager.json');
 
-let MetaNANJCOINManager = web3.eth.contract(MetaNANJCOINManagerABI)
 let TXRELAY = web3.eth.contract(TXRELAYABI)
+let MetaNANJCOINManager = web3.eth.contract(MetaNANJCOINManagerABI)
+
+
+
 let TXRELAYAddress = process.env.TXRELAY_ADDRESS
-
-
-
 let NANJCOINAddress = process.env.ADDRESS_NANJCOIN_TEST
 let nanjCoinFounder = process.env.ADDRESS_NANJ_FOUNDER
 let metaNanjCoinManagerContractAddress = process.env.ADDRESS_META_NANJ_MANAGER
 let zeroAddress = "0x0000000000000000000000000000000000000000"
 
-const getAddressNanj = function (address) {
+const getAddressNanj = async function (address) {
     let NANJCOINManager = MetaNANJCOINManager.at(metaNanjCoinManagerContractAddress)
-    let addressNanj = NANJCOINManager.getWallet.call(address)
+    let addressNanj = await NANJCOINManager.getWallet.call(address)
     if (addressNanj == zeroAddress) {
         return address
     }
@@ -59,7 +59,6 @@ const pad = function (n) {
 }
 
 const encodeFunctionTxData = function (functionName, types, args) {
-
     var fullName = functionName + '(' + types.join() + ')';
     var signature = CryptoJS.SHA3(fullName, { outputLength: 256 }).toString(CryptoJS.enc.Hex).slice(0, 8);
     var dataHex = '0x' + signature + coder.encodeParams(types, args);
@@ -81,7 +80,6 @@ const signPayload = async function (signingAddr, txRelay, whitelistOwner, destin
     let sig
     let retVal = {}
     data = encodeFunctionTxData(functionName, functionTypes, functionParams)
-
     nonce = await txRelay.getNonce.call(signingAddr)
     //Tight packing, as Solidity sha3 does
     hashInput = '0x1900' + txRelay.address.slice(2) + whitelistOwner.slice(2) + pad(nonce.toString('16')).slice(2)
@@ -103,17 +101,12 @@ const signPayload = async function (signingAddr, txRelay, whitelistOwner, destin
 const generateDataRelayerTx = async function(from, privKey, to, transferAmount) {
     let types = ['address', 'address', 'address', 'uint256', 'bytes', 'bytes32']
     let nanjTransferdata = encodeFunctionTxData('transfer', ['address', 'uint256'], [to, transferAmount])
-
-    let founderWallet = nanjCoinFounder
+    let founderWallet = await getAddressNanj(from)
     let destination = NANJCOINAddress
     let value = 0
     let data = nanjTransferdata    
 
     let txRELAY = TXRELAY.at(TXRELAYAddress)
-
-    //add accounts[0] to whitelist
-    await txRELAY.addToWhitelist([from,to])
-
     let params = [from, founderWallet, destination, value, data, sdkDeveloper.getAppHash()]
 
     return signPayload(from, txRELAY, zeroAddress, metaNanjCoinManagerContractAddress,
