@@ -36,6 +36,8 @@ const getAddressNanj = async function (address) {
 const getBalanceNanj = async function (address) {
     let balance = await NANJCoinContract.balanceOf(address)
 
+    console.log('balance: '+balance)
+
     if (balance > 0) 
         return (balance/100000000);
 

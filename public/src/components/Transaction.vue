@@ -3,7 +3,7 @@
     <h2 class="text-center">Transaction</h2>
     
     <div class="alert alert-success" v-if="txsSuccess">
-      <p class="mb-0"><strong>Well done!</strong> You successfully transaction.</p>
+      <p class="mb-0"><strong>Well done!</strong> Your transaction is successfully.</p>
     </div>
 
     <div class="alert alert-danger" v-if="errors.length > 0">
@@ -33,7 +33,7 @@
       <div class="form-group">
         <input type="password" name="password" class="form-control" placeholder="Password" v-model="password">
       </div>
-      <button type="submit" class="btn btn-info" @click="confirmPassphrase">Confirm</button>
+      <button type="submit" class="btn btn-info" @click="confirmPassphrase" :disabled="submitted == 1">Confirm</button>
     </form>
   </div>
 </template>
@@ -56,22 +56,14 @@
         addFrom: '0x'+keyJson.address,
         addTo: null,
         sendAmount: null,
-        txsSuccess: false
+        txsSuccess: false,
+        submitted: false
       }
     },
     mounted() {
       
     },
     methods: {
-      resetVarData() {
-        this.errors = [];
-        this.password = null;
-        this.sendToken = true;
-        this.cfrPasspharse = false;
-        this.addTo = null;
-        this.sendAmount = null;
-        this.txsSuccess = false;
-      },
       validate() {
           this.errors = [];
 
@@ -105,6 +97,7 @@
           };
 
           var self = this;
+          self.submitted = true;
           axios['post'](uri, data)
             .then(response => {
               if (typeof response.data.data === 'object') {
@@ -112,6 +105,7 @@
               }
             })
             .catch(error => {
+              self.submitted = false;
               if (typeof error.response.data === 'object') {
                 self.errors = _.flatten(_.toArray(error.response.data));
               } else {
@@ -136,12 +130,18 @@
 
         axios['post'](uri, data)
           .then(response => {
-            if (typeof response.data.data === 'object') {
+            if (typeof response.data === 'object') {
+              self.errors = [];
+              self.password = null;
+              self.sendToken = false;
+              self.cfrPasspharse = false;
+              self.addTo = null;
+              self.sendAmount = null;
               self.txsSuccess = true;
-              self.resetVarData();
             }
           })
           .catch(error => {
+            self.submitted = false;
             if (typeof error.response.data === 'object') {
                 self.errors = _.flatten(_.toArray(error.response.data));
             } else {

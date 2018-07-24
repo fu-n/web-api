@@ -8,21 +8,15 @@ var config = require('../config.json')
 const server = require('../assets/server')
 var generateData = require('../assets/generate-data-relayerTx.js')
 
-
-
 router.post('/tx/relayTx', async function (req, res, next) {
 		let appId = process.env.CLIENT_ID
 		let secretKey = process.env.SECRET_KEY
 	    let NanjServer = new server(appId, secretKey)
 
 	    // check balance 
-	    // let ethBalance = web3.eth.getBalance(req.body.from)
-    	// if (web3.fromWei(ethBalance) <= 0) {
-    	// 	return res.status(403).json({message: "Your ETH Amount not enought."});
-    	// }
-
 	    let founderWallet = await generateData.address(req.body.from)
 	    let balanceNanj = await generateData.getBalanceNanj(founderWallet)
+	    console.log('balanceNanj: '+balanceNanj)
 	    if (balanceNanj <= 0) {
 	    	return res.status(403).json({message: "Your NANJ Amount not enought."});
 	    }
@@ -36,9 +30,7 @@ router.post('/tx/relayTx', async function (req, res, next) {
 		})
 
 		data.then(function(response) {
-
 			let _response = JSON.stringify(response)
-
 			NanjServer.sentRelayTx(_response, 'test SDK').then(function(result) {
 				return res.json(result)
 		    }, function(err) {

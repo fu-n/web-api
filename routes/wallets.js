@@ -55,6 +55,7 @@ router.post('/wallet/create', [middleware.mnemonic], function(req, res, next) {
 			salt: ethUtil.crypto.randomBytes(32),
 			iv: ethUtil.crypto.randomBytes(16)
 		}
+		// cause: not alright lenght
 		// response.keyStore = myetherwallet.toV3(response.address, _password, response.privateKey);
 
 		let options = {
