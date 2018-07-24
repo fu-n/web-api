@@ -30,14 +30,41 @@ router.post('/wallet/create', [middleware.mnemonic], function(req, res, next) {
 		hdWallet.generateAddresses(1)
 		const { wallet } = hdWallet._children[0]
 		let response = {}
-		response.address = "0x" + wallet.getAddress().toString("hex")
-		response.publicKey = wallet._pubKey.toString('hex')
+		response.address = wallet.getAddress().toString("hex")
+		// response.publicKey = wallet._pubKey.toString('hex')
 		response.privateKey = wallet._privKey.toString('hex')
 
+		let password = req.body.password;
+		if (typeof password == "undefined") {
 
-		let _password = req.body.password || '123456789';
-		let opts = {}
-		response.keyStore = myetherwallet.toV3(response.address, _password, response.privateKey);
+			var _password = '123456789';
+		} else {
+			if (password.length == 0) {
+				var _password = '123456789';
+			} else if (password.length < 9) {
+				return res.status(422).json({message: "Your password must be at least 9 characters. Please ensure it is a strong password."});
+			} else {
+				var _password = password;
+			}
+		}
+
+		let opts = {
+			salt: ethUtil.crypto.randomBytes(32),
+			iv: ethUtil.crypto.randomBytes(16)
+		}
+		// response.keyStore = myetherwallet.toV3(response.address, _password, response.privateKey);
+
+		let options = {
+		  	kdf: "scrypt",
+		  	cipher: "aes-128-ctr",
+		  	kdfparams: {
+		  		n: 8192,
+		  		r: 8,
+		  		p: 1
+		  	}
+		};
+
+		response.keyStore = keythereum.dump(_password, response.privateKey, opts.salt, opts.iv, options)
 
 		return res.status(200).json({ statusCode: 200, message: 'Success.', data: response });
     });
@@ -64,7 +91,7 @@ router.post('/wallet/import', [middleware.walletImport], function(req, res, next
 		  	// let publicKey = ethUtil.privateToPublic(new Buffer(privateKey.toString('hex'), 'hex'));
 
 		  	let response = {
-		  		address: '0x'+keystore.address,
+		  		address:  '0x'+keystore.address,
 		  		// publicKey: publicKey.toString('hex'),
 		  		privateKey: privateKey.toString('hex')
 		  	}

@@ -6,7 +6,7 @@
       <p class="mb-0"><strong>Well done!</strong> You successfully create new wallet.</p>
       <br>
       <ul>
-          <li><strong>Address: </strong>{{ myWallet.address }}</li>
+          <li><strong>Address: </strong>0x{{ myWallet.address }}</li>
           <!-- <li><strong>Public Key: </strong>{{ myWallet.publicKey }}</li> -->
           <li class="eye-txt-box">
             <strong>Private Key: </strong>
@@ -37,6 +37,7 @@
       </div>
       <div class="form-group">
         <input type="password" name="password" class="form-control" placeholder="Password" v-model="password">
+        <p class="help-block">Default: 123456789</p>
       </div>
       <button type="submit" class="btn btn-info" @click="create">Submit</button>
     </form>
@@ -76,7 +77,8 @@
         if(valid) {
           let uri = '/api/wallet/create';
           let data = {
-            mnemonic_phrase: this.mnemonic
+            mnemonic_phrase: this.mnemonic,
+            password: this.password
           }
 
           axios['post'](uri, data)
