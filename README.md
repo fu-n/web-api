@@ -90,7 +90,7 @@ Account
 
     | Key          | Value                                      | Description                   |
     | ------------ | ------------------------------------------ | ----------------------------- |
-    | Content-Type | application/json                           | Setting iput data type        |
+    | Content-Type | application/json                           | Setting input data type       |
 
 - Body Parameters. 
 
@@ -144,7 +144,7 @@ Account
 
     | Key          | Value                                      | Description                   |
     | ------------ | ------------------------------------------ | ----------------------------- |
-    | Content-Type | application/json                           | Setting iput data type        |
+    | Content-Type | application/json                           | Setting input data type       |
 
 - Body Parameters. 
 
@@ -201,7 +201,7 @@ Account
 
     | Key          | Value                                      | Description                   |
     | ------------ | ------------------------------------------ | ----------------------------- |
-    | Content-Type | application/json                           | Setting iput data type        |
+    | Content-Type | application/json                           | Setting input data type       |
 
 - Body Parameters. 
 
