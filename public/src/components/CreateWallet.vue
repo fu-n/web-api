@@ -94,6 +94,8 @@
                 }
                 localStorage.setItem('nanjKeystore', JSON.stringify(obj))
 
+                self.$root.keyStoreDownload = 'data:'+"text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj))
+
                 if (localStorage.getItem("nanjAddress") !== null) {
                   localStorage.removeItem('nanjAddress')
                 }

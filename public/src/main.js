@@ -14,14 +14,21 @@ import VuejsDialog from "vuejs-dialog"
 
 Vue.use(VuejsDialog)
 
+Vue.config.devtools = false
+
 Vue.component('qr-code', VueQRCodeComponent)
 
 new Vue({
   el: 'app',
   data() {
-    return {
-
+    var _keyStore = null
+    if (localStorage.getItem("nanjKeystore") !== null) {
+      _keyStore = 'data:'+"text/json;charset=utf-8," + encodeURIComponent(localStorage.getItem("nanjKeystore"))
     }
+    return {
+      keyStoreDownload: _keyStore,
+    }
+    
   },
   filters: {
     toNumber: {

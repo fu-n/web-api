@@ -17,11 +17,11 @@
                 <li><a href="" @click="makeTransaction($event)">Transaction</a></li>
               </ul>
               
-              <ul class="navbar-nav right-menu" v-if="keyStoreDownload && keyStoreDownload.length > 0">
+              <ul class="navbar-nav right-menu" v-if="this.$root.keyStoreDownload && this.$root.keyStoreDownload.length > 0">
                 <li class="nav-item dropdown">
                   <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a> 
                   <div aria-labelledby="navbarDropdown" class="dropdown-menu dropdown-menu-right">
-                    <a v-bind:href="keyStoreDownload" download="keyStore.json" class="dropdown-item account">Download Key Store File</a> 
+                    <a v-bind:href="this.$root.keyStoreDownload" download="keyStore.json" class="dropdown-item account">Download Key Store File</a> 
                     <a href="" @click="myWallet($event)" class="dropdown-item account">Wallet Info</a>
                   </div>
                 </li>
@@ -77,7 +77,6 @@
     props: ['show'],
     data() {
       return {
-        keyStoreDownload: 'data:'+"text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(localStorage.getItem("nanjKeystore"))),
         is_home: true,
         is_create: false,
         is_import: false,

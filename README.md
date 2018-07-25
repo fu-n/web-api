@@ -48,6 +48,7 @@ npm run test
 ### Break down into end to end tests
 
 Run project with link. Ex: http://localhost:your_port
+From main menu on Guide.
 
 Create wallet
 * Input your 12 words mnemonic (with your passphrase or not. Default passphrase is: 123456789)
@@ -63,14 +64,68 @@ Transaction
 * Input amount. (with 8 decimal)
 * Next step enter your passphrase to confirm.
 
+Account
+* You can Download Key Store file
+* View your wallet info
+
 ## Deployment
 
 ## Built With
 
 * [ETH Lightwallet](https://github.com/ConsenSys/eth-lightwallet) - Lightweight JS Wallet for Node and the browser
-* [Keythereum](https://www.npmjs.com/package/keythereum)
+* [Keythereum](https://www.npmjs.com/package/keythereum) - Keythereum is a JavaScript tool to generate, import and export Ethereum keys.
 * [Bip39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki) - Generating the mnemonic
+
 ## API
+
+### 1. {{API_ENDPOINT}}/authorise
+
+| API authorise example                           |
+| :---:                                           |
+| GET: https://staging.nanjcoin.com/api/authorise |
+
+- Header Parameters. 
+
+    | Key          | Value                                      | Description                   |
+    | ------------ | ------------------------------------------ | ----------------------------- |
+    | Client-ID    | 61415410861056936449                       | your application's app id     |
+    | Secret-Key   | i7XJTOjAcEFu2YowtF49U07bMdRAK9gIQRrBfCAL   | your application's secret key |
+
+
+- Response data.
+    - HTTP status: 200
+    - Response body
+```
+{                                                                 
+    "status_code": 200,
+    "messages": "success",
+    "data": {
+        "client_id": "61415410861056936449",
+        "name": "app_name",
+        "eth_address": "0x000000000000000000000000000000000000000",
+        "status": 0,
+        "version": "1",
+        "smartContracts": {
+            "metaNanjManager": "0x000000000000000000000000000000000000000"
+        },
+        "supportedERC20": [
+            {
+                "id": 1,
+                "name": "NANJCOIN",
+                "address": "0x000000000000000000000000000000000000000"
+            },
+            {
+                "id": 2,
+                "name": "YUKICOIN",
+                "address": "0x000000000000000000000000000000000000000"
+            }
+        ],
+        "appHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "env": "ropsten",
+        "chainId": "3"
+    }
+} 
+```
 
 ### Account & Wallet
 
