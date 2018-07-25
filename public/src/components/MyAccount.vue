@@ -13,8 +13,10 @@
             <p><strong>Your Address (NANJ)</strong></p>
             <div class="loader" v-if="loading"></div>
             <qr-code :text="nanj" :size="size" :bg-color="bgColor" :color="fgColor" error-level="L"></qr-code>
-            <p>{{nanj}}</p>
-            <p>Balance: {{nanjBalance}}</p>
+            <div v-if="mountDone">
+              <p>{{nanj}}</p>
+              <p>Balance: {{nanjBalance}}</p>
+            </div>
           </div>
         </div>
         
@@ -33,6 +35,7 @@
   export default {
     data() {
       return {
+        mountDone: false,
         loading: true,
         address: '',
         nanj: '',
@@ -48,17 +51,12 @@
       keyJson = JSON.parse(keyJson)
       self.address = '0x'+keyJson.address
 
-      if (localStorage.getItem("nanjAddress") !== null) {
-        self.nanj = localStorage.getItem('nanjAddress')
-        self.loading = false
-      } else {
-        axios.get('/api/wallet/check?address='+self.address).then(response => {
-              self.nanj = response.data.data.address
-              self.nanjBalance = response.data.data.balanceNanj
-              self.loading = false
-              localStorage.setItem('nanjAddress', self.nanj)
+      axios.get('/api/wallet/check?address='+self.address).then(response => {
+            self.nanj = response.data.data.address
+            self.nanjBalance = response.data.data.balanceNanj
+            self.loading = false
+            self.mountDone = true
           })
-      }
 
     },
     methods: {
