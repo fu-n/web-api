@@ -51,7 +51,8 @@ module.exports = class {
 	}
 
 	sentRelayTx(data, message) {
-		let postData = querystring.stringify(data);
+		// let postData = querystring.stringify(data);
+		let postData = data
 		var options = {
 			host: process.env.NANJ_HOST,
 			port: 80,
@@ -65,6 +66,7 @@ module.exports = class {
                 'Content-Length': Buffer.byteLength(postData)
 			}
 		};
+
 		return new Promise((resolve, reject) => {
 		    http.request(options, function(response) {
 				console.log(options.method + ':'+options.host+options.path)

@@ -14,6 +14,7 @@
             <div class="loader" v-if="loading"></div>
             <qr-code :text="nanj" :size="size" :bg-color="bgColor" :color="fgColor" error-level="L"></qr-code>
             <p>{{nanj}}</p>
+            <p>Balance: {{nanjBalance}}</p>
           </div>
         </div>
         
@@ -35,6 +36,7 @@
         loading: true,
         address: '',
         nanj: '',
+        nanjBalance: 0,
         bgColor: "#FFFFFF",
         fgColor: "#000000",
         size: 256
@@ -52,6 +54,7 @@
       } else {
         axios.get('/api/wallet/check?address='+self.address).then(response => {
               self.nanj = response.data.data.address
+              self.nanjBalance = response.data.data.balanceNanj
               self.loading = false
               localStorage.setItem('nanjAddress', self.nanj)
           })

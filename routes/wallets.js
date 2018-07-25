@@ -20,8 +20,12 @@ middleware.walletImport = require('../middleware/validate-wallet-import.js');
 router.get('/wallet/check', function(req, res, next) {
 		let response = {}
 		generateData.address(req.query.address).then(function(result) {
-			response.address = result;
-			return res.status(200).json({ statusCode: 200, message: 'Success.', data: response });
+			response.address = result
+			generateData.getBalanceNanj(result).then(function(balance) {
+				response.balanceNanj = balance
+				return res.status(200).json({ statusCode: 200, message: 'Success.', data: response });
+			})
+			
 	    }, function(err) {
 			return res.json(err)
 	    });
