@@ -30,8 +30,8 @@ router.post('/tx/relayTx', async function (req, res, next) {
 		})
 
 		data.then(function(response) {
-			let _response = JSON.stringify(response)
-			NanjServer.sentRelayTx(_response, 'test SDK').then(function(result) {
+			// let _response = JSON.stringify(response)
+			NanjServer.sentRelayTx(response, 'test SDK').then(function(result) {
 				return res.json(result)
 		    }, function(err) {
 				return res.json(err)

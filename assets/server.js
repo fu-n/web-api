@@ -51,8 +51,7 @@ module.exports = class {
 	}
 
 	sentRelayTx(data, message) {
-		// let postData = querystring.stringify(data);
-		let postData = data
+		let postData = querystring.stringify(data);
 		var options = {
 			host: process.env.NANJ_HOST,
 			port: 80,
@@ -81,7 +80,7 @@ module.exports = class {
 
 					return reject(objectData)
 				});
-			}).end();
+			}).write(postData).end();
 	    })
 	}
 };

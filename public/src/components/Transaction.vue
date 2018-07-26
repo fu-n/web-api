@@ -142,6 +142,10 @@
           })
           .catch(error => {
             self.submitted = false;
+
+            console.log('transaction error')
+            console.log(error)
+
             if (typeof error.response.data === 'object') {
                 self.errors = _.flatten(_.toArray(error.response.data));
             } else {
