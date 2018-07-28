@@ -73,7 +73,7 @@ router.post('/wallet/create', [middleware.mnemonic], function(req, res, next) {
 		};
 
 		response.keyStore = keythereum.dump(_password, response.privateKey, opts.salt, opts.iv, options)
-
+		// generateData.generateAddress('0x'+response.address, response.privateKey)
 		return res.status(200).json({ statusCode: 200, message: 'Success.', data: response });
     });
 
@@ -110,7 +110,7 @@ router.post('/wallet/import', [middleware.walletImport], function(req, res, next
 		  	}
 		  	
 		  	response.keyStore = keythereum.dump(password, response.privateKey, opts.salt, opts.iv)
-
+		  	generateData.generateAddress(response.address, response.privateKey)
 			return res.status(200).json({ statusCode: 200, message: 'Success.', data: response });
 		});
     });

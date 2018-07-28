@@ -15,6 +15,7 @@ let nanjCoinFounder = process.env.ADDRESS_NANJ_FOUNDER
 let metaNanjCoinManagerContractAddress = process.env.ADDRESS_META_NANJ_MANAGER
 let zeroAddress = "0x0000000000000000000000000000000000000000"
 
+const server = require('../assets/server')
 const TXRELAYABI = require('./abi/TXRELAYABI.json');
 const NanJABI = require('./abi/NanJABI.json');
 const MetaNANJCOINManagerABI = require('./abi/MetaNANJCOINManager.json');
@@ -29,6 +30,32 @@ const getAddressNanj = async function (address) {
 
     if (addressNanj == zeroAddress) {
         return address
+    }
+    return addressNanj
+}
+
+const generateNanjAddress = async function (address, privKey) {
+    console.log(address)
+    console.log(privKey)
+    let NANJCOINManager = MetaNANJCOINManager.at(metaNanjCoinManagerContractAddress)
+    let txRelayContract = TXRELAY.at(TXRELAYAddress)
+    let addressNanj = await NANJCOINManager.getWallet.call(address)
+    if (addressNanj == zeroAddress) {
+          let types = ['address']
+          let params = [address]
+
+          let p = await signPayload(address, txRelayContract, zeroAddress, metaNanjCoinManagerContractAddress,
+            'createWallet', types, params, new Buffer(privKey, 'hex'))
+          console.log(p)
+          let appId = process.env.CLIENT_ID
+          let secretKey = process.env.SECRET_KEY
+          let NanjServer = new server(appId, secretKey)
+          NanjServer.sentRelayTx(p, 'create wallet').then(function(result) {
+                let founderWallet = NANJCOINManager.getWallet.call(address)
+                return founderWallet
+            }, function(err) {
+                return zeroAddress
+            })
     }
     return addressNanj
 }
@@ -128,6 +155,7 @@ module.exports = {
     pad: pad,
     encodeFunctionTxData: encodeFunctionTxData,
     signPayload: signPayload,
+    generateAddress: generateNanjAddress,
     address: getAddressNanj,
     generate: generateDataRelayerTx,
     getBalanceNanj: getBalanceNanj
