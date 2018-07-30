@@ -35,6 +35,8 @@
       </div>
       <button type="submit" class="btn btn-info" @click="confirmPassphrase" :disabled="submitted == 1">Confirm</button>
     </form>
+
+    <div class="page-loading" v-if="pageLoading"></div>
   </div>
 </template>
 
@@ -57,7 +59,8 @@
         addTo: null,
         sendAmount: null,
         txsSuccess: false,
-        submitted: false
+        submitted: false,
+        pageLoading: false
       }
     },
     mounted() {
@@ -98,13 +101,16 @@
 
           var self = this;
           self.submitted = true;
+          self.pageLoading = true;
           axios['post'](uri, data)
             .then(response => {
+              self.pageLoading = false
               if (typeof response.data.data === 'object') {
                 self.transaction(response.data.data.privateKey);
               }
             })
             .catch(error => {
+              self.pageLoading = false
               self.submitted = false;
               if (typeof error.response.data === 'object') {
                 self.errors = _.flatten(_.toArray(error.response.data));
@@ -115,6 +121,8 @@
         }
       },
       transaction(privKey) {
+        var self = this
+        self.pageLoading = true
         var self = this;
         if (typeof privKey == 'undefined' || privKey === null) {
           self.errors = ['Private key not found. Please try again.'];
@@ -138,14 +146,15 @@
               self.addTo = null;
               self.sendAmount = null;
               self.txsSuccess = true;
+
+              self.pageLoading = false
             }
           })
           .catch(error => {
+            self.pageLoading = false;
             self.submitted = false;
-
-            console.log('transaction error')
-            console.log(error)
-
+            self.sendToken = true;
+            self.cfrPasspharse = false;
             if (typeof error.response.data === 'object') {
                 self.errors = _.flatten(_.toArray(error.response.data));
             } else {

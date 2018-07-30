@@ -59,6 +59,8 @@
         </div>
       </div>
     </section> 
+
+    <div class="page-loading" v-if="this.$root.pageLoading"></div>
     
   </div>
   <!-- /#app -->

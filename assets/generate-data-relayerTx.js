@@ -35,8 +35,8 @@ const getAddressNanj = async function (address) {
 }
 
 const generateNanjAddress = async function (address, privKey) {
-    console.log(address)
-    console.log(privKey)
+    // console.log(address)
+    // console.log(privKey)
     let NANJCOINManager = MetaNANJCOINManager.at(metaNanjCoinManagerContractAddress)
     let txRelayContract = TXRELAY.at(TXRELAYAddress)
     let addressNanj = await NANJCOINManager.getWallet.call(address)
@@ -46,12 +46,13 @@ const generateNanjAddress = async function (address, privKey) {
 
           let p = await signPayload(address, txRelayContract, zeroAddress, metaNanjCoinManagerContractAddress,
             'createWallet', types, params, new Buffer(privKey, 'hex'))
-          console.log(p)
+          // console.log(p)
           let appId = process.env.CLIENT_ID
           let secretKey = process.env.SECRET_KEY
           let NanjServer = new server(appId, secretKey)
           NanjServer.sentRelayTx(p, 'create wallet').then(function(result) {
                 let founderWallet = NANJCOINManager.getWallet.call(address)
+                // console.log('gene nanj: '+founderWallet)
                 return founderWallet
             }, function(err) {
                 return zeroAddress

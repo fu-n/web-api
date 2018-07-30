@@ -27,6 +27,7 @@ new Vue({
     }
     return {
       keyStoreDownload: _keyStore,
+      pageLoading: false
     }
     
   },

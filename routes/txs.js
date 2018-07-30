@@ -17,7 +17,7 @@ router.post('/tx/relayTx', async function (req, res, next) {
 	    let founderWallet = await generateData.address(req.body.from)
 	    let balanceNanj = await generateData.getBalanceNanj(founderWallet)
 	    // console.log('balanceNanj: '+balanceNanj)
-	    if (balanceNanj <= 0) {
+	    if (balanceNanj <= 0 || req.body.value > balanceNanj) {
 	    	return res.status(403).json({message: "Your NANJ Amount not enought."});
 	    }
 

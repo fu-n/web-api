@@ -67,7 +67,7 @@ module.exports = class {
 		};
 
 		return new Promise((resolve, reject) => {
-		    http.request(options, function(response) {
+		    var postHTTP = http.request(options, function(response) {
 				console.log(options.method + ':'+options.host+options.path)
 				console.log('STATUS: ' + response.statusCode);
 				response.setEncoding('utf8');
@@ -80,7 +80,11 @@ module.exports = class {
 
 					return reject(objectData)
 				});
-			}).write(postData).end();
+			})
+
+			// post the data
+			postHTTP.write(postData);
+            postHTTP.end();
 	    })
 	}
 };

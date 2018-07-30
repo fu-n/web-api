@@ -81,6 +81,7 @@
             password: this.password
           }
 
+          self.$root.pageLoading = true
           axios['post'](uri, data)
             .then(response => {
               if (typeof response.data.data === 'object') {
@@ -99,14 +100,18 @@
                 if (localStorage.getItem("nanjAddress") !== null) {
                   localStorage.removeItem('nanjAddress')
                 }
+                localStorage.setItem('nanjAddress', self.myWallet.nanj)
 
                 self.mnemonic = '';
                 self.password = '';
                 self.titlePage = 'Your wallet';
                 self.is_account = true;
+
+                self.$root.pageLoading = false
               }
             })
             .catch(error => {
+              self.$root.pageLoading = false
               if (typeof error.response.data === 'object') {
                   self.errors = _.flatten(_.toArray(error.response.data));
               } else {

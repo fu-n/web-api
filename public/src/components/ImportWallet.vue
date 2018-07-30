@@ -84,12 +84,14 @@
         var self = this;
         if(valid) {
           let uri = '/api/wallet/import';
-          if (this.formData.has('password')) {
-            this.formData.delete('password');
+          if (self.formData.has('password')) {
+            self.formData.delete('password');
           }
-          this.formData.append('password', this.password);
+          self.formData.append('password', self.password);
 
-          axios['post'](uri, this.formData)
+          self.$root.pageLoading = true
+
+          axios['post'](uri, self.formData)
             .then(response => {
               if (typeof response.data.data === 'object') {
                 self.myWallet = response.data.data;
@@ -104,18 +106,23 @@
 
                 self.$root.keyStoreDownload = 'data:'+"text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj))
 
+
                 if (localStorage.getItem("nanjAddress") !== null) {
                   localStorage.removeItem('nanjAddress')
                 }
+                localStorage.setItem('nanjAddress', self.myWallet.nanj)
 
                 self.formData = new FormData();
                 self.$refs.keystoreFile.value = '';
                 self.password = '';
                 self.titlePage = 'Your wallet';
                 self.is_account = true;
+
+                self.$root.pageLoading = false
               }
             })
             .catch(error => {
+              self.$root.pageLoading = false
               self.submitted = false;
               if (typeof error.response.data === 'object') {
                   self.errors = _.flatten(_.toArray(error.response.data));
