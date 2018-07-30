@@ -16,27 +16,20 @@ router.post('/tx/relayTx', async function (req, res, next) {
 	    // check balance 
 	    let founderWallet = await generateData.address(req.body.from)
 	    let balanceNanj = await generateData.getBalanceNanj(founderWallet)
-	    // console.log('balanceNanj: '+balanceNanj)
+	    console.log('balanceNanj: '+balanceNanj)
 	    if (balanceNanj <= 0 || req.body.value > balanceNanj) {
 	    	return res.status(403).json({message: "Your NANJ Amount not enought."});
 	    }
 
-		let data = new Promise(function(resolve, reject) {
-			generateData.generate(req.body.from, req.body.privKey, req.body.to, req.body.value).then(function(result) {
-				resolve(result)
-			}, function(err) {
-				reject(err)
-			})
-		})
+		let dataHash = await generateData.generate(req.body.from, req.body.privKey, req.body.to, req.body.value)
 
-		data.then(function(response) {
-			// let _response = JSON.stringify(response)
-			NanjServer.sentRelayTx(response, 'test SDK').then(function(result) {
-				return res.json(result)
-		    }, function(err) {
-				return res.json(err)
-		    })
-		}, function(err) {
+		let relayNonce = await NanjServer.relayNonce({sender: req.body.from})
+
+		dataHash.nonce = relayNonce.data
+
+        NanjServer.sentRelayTx(dataHash, 'test SDK').then(function(result) {
+			return res.json(result)
+	    }, function(err) {
 			return res.json(err)
 	    })
     })
@@ -51,6 +44,12 @@ router.post('/tx/raw', function (req, res, next) {
 	    }, function(err) {
 			return res.json(err)
 	    })
+    })
+
+router.get('/tx/relayNonce', function (req, res, next) {
+	  	let appId = process.env.CLIENT_ID
+		let secretKey = process.env.SECRET_KEY
+		
     })
 
 module.exports = router;

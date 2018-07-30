@@ -31,6 +31,17 @@ router.get('/wallet/check', function(req, res, next) {
 	    });
     });
 
+router.get('/wallet/relayNonce', function(req, res, next) {
+		
+		generateData.relayNonce(req.query.address).then(function(result) {
+			
+			return res.status(200).json({ statusCode: 200, message: 'Success.', data: result });
+			
+	    }, function(err) {
+			return res.json(err)
+	    });
+    });
+
 router.post('/wallet/create', [middleware.mnemonic], function(req, res, next) {
     	let mnemonicPhrase = req.body.mnemonic_phrase
     	const hdWallet = EthHdWallet.fromMnemonic(mnemonicPhrase)
@@ -130,7 +141,7 @@ router.post('/wallet/import', [middleware.walletImport], function(req, res, next
 		  	response.keyStore = keythereum.dump(password, response.privateKey, opts.salt, opts.iv)
 		  	
 		  	generateData.generateAddress(response.address, response.privateKey)
-		  	
+
 		 //  	let generateAddress = new Promise(function(resolve, reject) {
 			// 	generateData.generateAddress(response.address, response.privateKey).then(function(result) {
 			// 		resolve(result)

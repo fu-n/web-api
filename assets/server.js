@@ -87,4 +87,35 @@ module.exports = class {
             postHTTP.end();
 	    })
 	}
+
+	relayNonce(data) {
+		let postData = querystring.stringify(data)
+
+		var options = {
+			host: process.env.NANJ_HOST,
+			port: 80,
+			path: process.env.PATH_RELAY_NONCE+'?'+postData,
+			method: 'GET',
+			auth: process.env.BASIC_AUTH,
+			headers: {
+				'Client-ID':this.appId,
+				'Secret-Key':this.secretKey
+			}
+		};
+
+		return new Promise((resolve, reject) => {
+		    var postHTTP = http.request(options, function(response) {
+				response.setEncoding('utf8');
+				response.on('data', function (chunk) {
+					var objectData = JSON.parse(chunk);
+					if (response.statusCode == 200) {
+						resolve(objectData)
+					}
+
+					return reject(objectData)
+				});
+			}).end();
+	    })
+
+	}
 };

@@ -12,8 +12,8 @@
           <div class="col-md-6">
             <p><strong>Your Address (NANJ)</strong></p>
             <div class="loader" v-if="loading"></div>
-            <qr-code :text="nanj" :size="size" :bg-color="bgColor" :color="fgColor" error-level="L" v-if="nanj !== null"></qr-code>
             <div v-if="mountDone">
+              <qr-code :text="nanj" :size="size" :bg-color="bgColor" :color="fgColor" error-level="L"></qr-code>
               <p>{{nanj}}</p>
               <p>Balance: {{nanjBalance}}</p>
             </div>
