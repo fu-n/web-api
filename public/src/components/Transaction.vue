@@ -46,6 +46,7 @@
   import _ from 'lodash';
   import axios from 'axios';  
   import wallet from "./../wallet.js";
+  import utils from 'ethereumjs-util';
 
   export default {
     data() {
@@ -131,18 +132,30 @@
           self.errors = ['Private key not found. Please try again.'];
         }
 
-        let uri = '/api/tx/relayTx';
+        let uri = '/api/tx/getRelayerTxHash';
         let data = {
           from: self.addFrom,
           to: self.addTo,
-          value: self.sendAmount,
-          privKey: privKey
+          value: self.sendAmount
         };
 
         axios['post'](uri, data)
           .then(response => {
             if (typeof response.data === 'object') {
-              self.txHash = response.data.txHash
+
+              let hashSign = self.utilSign(response.data.data, response.data.hash, privKey, response.data.destinationAddress)
+
+              let _uri = '/api/tx/webRelayTx'
+              let _dataTx = {
+                hash: hashSign
+              }
+
+              return axios['post'](_uri, _dataTx);
+            }
+          })
+          .then(res => {
+            if (typeof res.data === 'object') {
+              self.txHash = res.data.txHash
               self.txHashLink = 'https://ropsten.etherscan.io/tx/'+self.txHash
 
               self.errors = [];
@@ -157,16 +170,31 @@
             }
           })
           .catch(error => {
+
+            console.log(error)
+
             self.pageLoading = false;
             self.submitted = false;
             self.sendToken = true;
             self.cfrPasspharse = false;
-            if (typeof error.response.data === 'object') {
-                self.errors = _.flatten(_.toArray(error.response.data));
+            if (typeof error.res.data === 'object') {
+                self.errors = _.flatten(_.toArray(error.res.data));
             } else {
                 self.errors = ['Something went wrong. Please try again.'];
             }
           });
+      },
+      utilSign(data, hash, privKey, destinationAddress) {
+        let sig = utils.ecsign(new Buffer(utils.stripHexPrefix(hash), 'hex'), new Buffer(privKey, 'hex'))
+
+        let retVal = {}
+        retVal.r = '0x' + sig.r.toString('hex')
+        retVal.s = '0x' + sig.s.toString('hex')
+        retVal.v = sig.v //Q: Why is this not converted to hex?
+        retVal.data = data
+        retVal.hash = hash
+        retVal.dest = destinationAddress
+        return retVal
       }
     } //end methods
   }

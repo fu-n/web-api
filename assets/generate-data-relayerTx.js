@@ -113,7 +113,6 @@ const signPayload = async function (signingAddr, txRelay, whitelistOwner, destin
         return //should throw error
     }
     let nonce
-    let blockTimeout
     let data
     let hashInput
     let hash
@@ -124,8 +123,8 @@ const signPayload = async function (signingAddr, txRelay, whitelistOwner, destin
 
     nonce = await NanjServer.relayNonce({sender: signingAddr})
 
-    console.log('---nonce---')
-    console.log(nonce)
+    // console.log('---nonce---')
+    // console.log(nonce)
 
     //Tight packing, as Solidity sha3 does
     hashInput = '0x1900' + txRelay.address.slice(2) + whitelistOwner.slice(2) + pad(nonce.data.toString('16')).slice(2)
@@ -143,8 +142,53 @@ const signPayload = async function (signingAddr, txRelay, whitelistOwner, destin
     return retVal
 }
 
-
 const generateDataRelayerTx = async function(from, privKey, to, transferAmount) {
+    let founderWallet = await getAddressNanj(from)
+    let types = ['address', 'address', 'address', 'uint256', 'bytes', 'bytes32']
+    let nanjTransferdata = encodeFunctionTxData('transfer', ['address', 'uint256'], [to, transferAmount])
+    let destination = NANJCOINAddress
+    let value = 0
+    let data = nanjTransferdata 
+
+    let txRELAY = TXRELAY.at(TXRELAYAddress)
+    let params = [from, founderWallet, destination, value, data, sdkDeveloper.getAppHash()]
+
+    return signPayload(from, txRELAY, zeroAddress, metaNanjCoinManagerContractAddress,
+          'forwardTo', types, params, new Buffer(privKey, 'hex'))
+}
+
+// clean function no-private key
+const hashSign = async function (sender, txRelay, whitelistOwner, destinationAddress, functionName, functionTypes, functionParams) {
+    if (functionTypes.length !== functionParams.length) {
+        return //should throw error
+    }
+    if (typeof (functionName) !== 'string') {
+        return //should throw error
+    }
+    let nonce
+    let data
+    let hashInput
+    let hash
+    let sig
+    let retVal = {}
+    let response = {}
+    data = encodeFunctionTxData(functionName, functionTypes, functionParams)
+
+    nonce = await NanjServer.relayNonce({sender: sender})
+
+    //Tight packing, as Solidity sha3 does
+    hashInput = '0x1900' + txRelay.address.slice(2) + whitelistOwner.slice(2) + pad(nonce.data.toString('16')).slice(2)
+        + destinationAddress.slice(2) + data.slice(2)
+    hash = solsha3(hashInput)
+
+    response.data = data
+    response.hash = hash
+    response.destinationAddress = destinationAddress
+
+    return response
+}
+
+const getRelayerTxHash = async function(from, to, transferAmount) {
     let founderWallet = await getAddressNanj(from)
     let types = ['address', 'address', 'address', 'uint256', 'bytes', 'bytes32']
     let nanjTransferdata = encodeFunctionTxData('transfer', ['address', 'uint256'], [to, transferAmount])
@@ -155,8 +199,8 @@ const generateDataRelayerTx = async function(from, privKey, to, transferAmount) 
     let txRELAY = TXRELAY.at(TXRELAYAddress)
     let params = [from, founderWallet, destination, value, data, sdkDeveloper.getAppHash()]
 
-    return signPayload(from, txRELAY, zeroAddress, metaNanjCoinManagerContractAddress,
-          'forwardTo', types, params, new Buffer(privKey, 'hex'))
+    return hashSign(from, txRELAY, zeroAddress, metaNanjCoinManagerContractAddress,
+          'forwardTo', types, params)
 }
 
 module.exports = {
@@ -166,5 +210,6 @@ module.exports = {
     generateAddress: generateNanjAddress,
     address: getAddressNanj,
     generate: generateDataRelayerTx,
-    getBalanceNanj: getBalanceNanj
+    getBalanceNanj: getBalanceNanj,
+    getRelayerTxHash: getRelayerTxHash
 };
