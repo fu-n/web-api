@@ -150,11 +150,8 @@ const generateDataRelayerTx = async function(from, privKey, to, transferAmount) 
     let nanjTransferdata = encodeFunctionTxData('transfer', ['address', 'uint256'], [to, transferAmount])
     let destination = NANJCOINAddress
     let value = 0
-    let data = nanjTransferdata    
-
-    console.log('sdkDeveloper.getAppHash()')
-    console.log(sdkDeveloper.getAppHash())
-
+    let data = nanjTransferdata 
+    
     let txRELAY = TXRELAY.at(TXRELAYAddress)
     let params = [from, founderWallet, destination, value, data, sdkDeveloper.getAppHash()]
 
