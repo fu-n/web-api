@@ -24,13 +24,17 @@ let NANJCoinContract = web3.eth.contract(NanJABI).at(NANJCOINAddress)
 let TXRELAY = web3.eth.contract(TXRELAYABI)
 let MetaNANJCOINManager = web3.eth.contract(MetaNANJCOINManagerABI)
 
+const appId = process.env.CLIENT_ID
+const secretKey = process.env.SECRET_KEY
+const NanjServer = new server(appId, secretKey)
+
 const getAddressNanj = async function (address) {
     let NANJCOINManager = MetaNANJCOINManager.at(metaNanjCoinManagerContractAddress)
     let addressNanj = await NANJCOINManager.getWallet.call(address)
 
-    if (addressNanj == zeroAddress) {
+    if (addressNanj == zeroAddress)
         return address
-    }
+    
     return addressNanj
 }
 
@@ -47,9 +51,7 @@ const generateNanjAddress = async function (address, privKey) {
           let p = await signPayload(address, txRelayContract, zeroAddress, metaNanjCoinManagerContractAddress,
             'createWallet', types, params, new Buffer(privKey, 'hex'))
           // console.log(p)
-          let appId = process.env.CLIENT_ID
-          let secretKey = process.env.SECRET_KEY
-          let NanjServer = new server(appId, secretKey)
+          
           NanjServer.sentRelayTx(p, 'create wallet').then(function(result) {
                 let founderWallet = NANJCOINManager.getWallet.call(address)
                 // console.log('gene nanj: '+founderWallet)
@@ -118,10 +120,12 @@ const signPayload = async function (signingAddr, txRelay, whitelistOwner, destin
     let sig
     let retVal = {}
     data = encodeFunctionTxData(functionName, functionTypes, functionParams)
-    nonce = await txRelay.getNonce.call(signingAddr)
+    // nonce = await txRelay.getNonce.call(signingAddr)
+
+    nonce = await NanjServer.relayNonce({sender: signingAddr})
 
     //Tight packing, as Solidity sha3 does
-    hashInput = '0x1900' + txRelay.address.slice(2) + whitelistOwner.slice(2) + pad(nonce.toString('16')).slice(2)
+    hashInput = '0x1900' + txRelay.address.slice(2) + whitelistOwner.slice(2) + pad(nonce.data.toString('16')).slice(2)
         + destinationAddress.slice(2) + data.slice(2)
     hash = solsha3(hashInput)
     sig = utils.ecsign(new Buffer(utils.stripHexPrefix(hash), 'hex'), privKey)
@@ -131,7 +135,7 @@ const signPayload = async function (signingAddr, txRelay, whitelistOwner, destin
     retVal.v = sig.v //Q: Why is this not converted to hex?
     retVal.data = data
     retVal.hash = hash
-    retVal.nonce = nonce
+    retVal.nonce = nonce.data
     retVal.dest = destinationAddress
     return retVal
 }

@@ -85,22 +85,7 @@ router.post('/wallet/create', [middleware.mnemonic], function(req, res, next) {
 
 		response.keyStore = keythereum.dump(_password, response.privateKey, opts.salt, opts.iv, options)
 		
-		generateData.generateAddress('0x'+response.address, response.privateKey)		
-
-		// let generateAddress = new Promise(function(resolve, reject) {
-		// 	generateData.generateAddress('0x'+response.address, response.privateKey).then(function(result) {
-		// 		resolve(result)
-		// 	}, function(err) {
-		// 		reject(err)
-		// 	})
-		// })
-
-		// generateAddress.then(function(nanj) {
-		// 	// console.log(response) => is address nanj
-			
-		// }, function(err) {
-		// 	return res.status(500).json({message: 'Generate NANJ Address error.'});
-	 //    })
+		generateData.generateAddress('0x'+response.address, response.privateKey)
 
 	    response.nanj = ''
 		return res.status(200).json({message: 'Success.', data: response });
@@ -141,22 +126,6 @@ router.post('/wallet/import', [middleware.walletImport], function(req, res, next
 		  	response.keyStore = keythereum.dump(password, response.privateKey, opts.salt, opts.iv)
 		  	
 		  	generateData.generateAddress(response.address, response.privateKey)
-
-		 //  	let generateAddress = new Promise(function(resolve, reject) {
-			// 	generateData.generateAddress(response.address, response.privateKey).then(function(result) {
-			// 		resolve(result)
-			// 	}, function(err) {
-			// 		reject(err)
-			// 	})
-			// })
-
-			// generateAddress.then(function(nanj) {
-			// 	// console.log(response) => is address nanj
-			// 	response.nanj = nanj
-			// 	return res.status(200).json({message: 'Success.', data: response });
-			// }, function(err) {
-			// 	return res.status(500).json({message: 'Generate NANJ Address error.'});
-		 //    })
 
 		    response.nanj = ''
 			return res.status(200).json({message: 'Success.', data: response });
