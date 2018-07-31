@@ -4,6 +4,7 @@
     
     <div class="alert alert-success" v-if="txsSuccess">
       <p class="mb-0"><strong>Well done!</strong> Your transaction is successfully.</p>
+      <p class="mb-0"><strong>Txhash: </strong> <a v-bind:href="txHashLink" target="_blank">{{ txHash }}</a></p>
     </div>
 
     <div class="alert alert-danger" v-if="errors.length > 0">
@@ -60,7 +61,9 @@
         sendAmount: null,
         txsSuccess: false,
         submitted: false,
-        pageLoading: false
+        pageLoading: false,
+        txHash: '',
+        txHashLink: ''
       }
     },
     mounted() {
@@ -139,6 +142,9 @@
         axios['post'](uri, data)
           .then(response => {
             if (typeof response.data === 'object') {
+              self.txHash = response.data.txHash
+              self.txHashLink = 'https://ropsten.etherscan.io/tx/'+self.txHash
+
               self.errors = [];
               self.password = null;
               self.sendToken = false;

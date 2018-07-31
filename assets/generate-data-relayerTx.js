@@ -80,7 +80,7 @@ const sdkDeveloper = {
   developerAddress : process.env.DEV_ADDRESS,
   getAppHash: () => { 
     // console.log(web3.sha3(this.appId + this.secretKey))
-    return web3.sha3(this.appId + this.secretKey) 
+    return web3.sha3(sdkDeveloper.appId + sdkDeveloper.secretKey) 
   }
 }
 
@@ -124,6 +124,9 @@ const signPayload = async function (signingAddr, txRelay, whitelistOwner, destin
 
     nonce = await NanjServer.relayNonce({sender: signingAddr})
 
+    console.log('---nonce---')
+    console.log(nonce)
+
     //Tight packing, as Solidity sha3 does
     hashInput = '0x1900' + txRelay.address.slice(2) + whitelistOwner.slice(2) + pad(nonce.data.toString('16')).slice(2)
         + destinationAddress.slice(2) + data.slice(2)
@@ -148,6 +151,9 @@ const generateDataRelayerTx = async function(from, privKey, to, transferAmount) 
     let destination = NANJCOINAddress
     let value = 0
     let data = nanjTransferdata    
+
+    console.log('sdkDeveloper.getAppHash()')
+    console.log(sdkDeveloper.getAppHash())
 
     let txRELAY = TXRELAY.at(TXRELAYAddress)
     let params = [from, founderWallet, destination, value, data, sdkDeveloper.getAppHash()]
