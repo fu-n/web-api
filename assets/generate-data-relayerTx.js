@@ -123,9 +123,6 @@ const signPayload = async function (signingAddr, txRelay, whitelistOwner, destin
 
     nonce = await NanjServer.relayNonce({sender: signingAddr})
 
-    // console.log('---nonce---')
-    // console.log(nonce)
-
     //Tight packing, as Solidity sha3 does
     hashInput = '0x1900' + txRelay.address.slice(2) + whitelistOwner.slice(2) + pad(nonce.data.toString('16')).slice(2)
         + destinationAddress.slice(2) + data.slice(2)

@@ -12,8 +12,11 @@ const appId = process.env.CLIENT_ID
 const secretKey = process.env.SECRET_KEY
 const NanjServer = new server(appId, secretKey)
 
+let middleware = {}
+middleware.transaction = require('../middleware/validate-transaction.js');
+
 // for API using with private key
-router.post('/tx/relayTx', async function (req, res, next) {
+router.post('/tx/relayTx', [middleware.transaction], async function (req, res, next) {
 	    // check balance 
 	    let founderWallet = await generateData.address(req.body.from)
 	    let balanceNanj = await generateData.getBalanceNanj(founderWallet)
@@ -35,7 +38,7 @@ router.post('/tx/relayTx', async function (req, res, next) {
     })
 
 // relayer for web with none private key
-router.post('/tx/getRelayerTxHash', async function (req, res, next) {
+router.post('/tx/getRelayerTxHash', [middleware.transaction], async function (req, res, next) {
 		// check balance 
 	    let founderWallet = await generateData.address(req.body.from)
 	    let balanceNanj = await generateData.getBalanceNanj(founderWallet)
