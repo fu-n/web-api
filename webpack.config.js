@@ -6,7 +6,7 @@ module.exports = {
   output: {
     filename: './public/build/bundle.js'
   },
-  watch:false,
+  watch: true,
   resolve: {
     alias: {
       vue: './vue.js'

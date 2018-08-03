@@ -15,11 +15,17 @@
             <div v-if="mountDone">
               <qr-code :text="nanj" :size="size" :bg-color="bgColor" :color="fgColor" error-level="L"></qr-code>
               <p>{{nanj}}</p>
-              <p>Balance: {{nanjBalance}}</p>
+              <p>Balance: {{nanjBalance}} <button type="button" class="btn btn-info" @click="sendTransaction($event)">Send Transaction</button></p>
             </div>
           </div>
         </div>
-        
+        <div class="row">
+          <div class="col-md-12">
+            <div v-if="is_sendnanj">
+              <sendtransaction></sendtransaction>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -29,12 +35,13 @@
   import $ from 'jquery';
   import _ from 'lodash';
   import axios from 'axios';
-  import lightwallet from 'eth-lightwallet';
 
+  import Sendtransaction from './Sendtransaction.vue';
 
   export default {
     data() {
       return {
+        is_sendnanj: false,
         mountDone: false,
         loading: true,
         address: '',
@@ -67,8 +74,17 @@
           })
 
     },
+    components: {Sendtransaction},
     methods: {
-
+      sendTransaction(event) {
+        if (event) event.preventDefault();
+        if (localStorage.getItem("nanjKeystore") === null) {
+          this.$dialog.alert({title: 'Info', body: 'Please create or import your wallet!', buttonLabel: 'Yes'});
+          return;
+        }
+        this.is_sendnanj = true
+        
+      },
     } //end methods
   }
 </script>

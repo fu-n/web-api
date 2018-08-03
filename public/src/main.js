@@ -6,9 +6,12 @@ require('bootstrap')
 
 import 'bootstrap/dist/css/bootstrap.css';
 
+$('.collapse').collapse();
+
 import Vue from 'vue'
 import App from './components/App.vue'
 import VueQRCodeComponent from 'vue-qrcode-component'
+import Paginate from 'vuejs-paginate'
 
 import VuejsDialog from "vuejs-dialog"
 
@@ -17,6 +20,7 @@ Vue.use(VuejsDialog)
 Vue.config.devtools = false
 
 Vue.component('qr-code', VueQRCodeComponent)
+Vue.component('paginate', Paginate)
 
 new Vue({
   el: 'app',
@@ -27,7 +31,11 @@ new Vue({
     }
     return {
       keyStoreDownload: _keyStore,
-      pageLoading: false
+      pageLoading: false,
+      CLIENT_ID: '575958089608922877',
+      SECRET_KEY: 'fF5MSugBFsUEoTiFIiRdUa1rFc5Y8119JVzyWUzJ',
+      NANJ_HOST: 'staging.nanjcoin.com',
+      HTTP_TX: 'https://ropsten.etherscan.io',
     }
     
   },
