@@ -2,23 +2,22 @@
   <div>
     <h2 class="text-center">Transaction List</h2>
     
-    <div class="accordion" id="accordionTransaction">
+    <div class="accordion" id="accordionTransaction" v-if="transactions.length">
       <div class="card" v-for="(item, index) in transactions">
         <div class="card-header" v-bind:id="'heading-'+doMath(index)">
           <h5 class="mb-0">
-          <template v-if="doMath(index) === 1">
-            <button class="btn btn-link" type="button" data-toggle="collapse" :data-target="'#collapse-'+doMath(index)" aria-expanded="true" :aria-controls="'collapse-'+doMath(index)">
-              {{ item.TxHash }}
-            </button>
-            <a v-bind:href="txHashLink(item.TxHash)" target="_blank">View etherscan</a>
-          </template>
-          <template v-else>
-            <button class="btn btn-link" type="button" data-toggle="collapse" :data-target="'#collapse-'+doMath(index)" aria-expanded="false" :aria-controls="'collapse-'+doMath(index)">
-              {{ item.TxHash }}
-            </button>
-            <a v-bind:href="txHashLink(item.TxHash)" target="_blank">View etherscan</a>
-          </template>
-          
+            <template v-if="doMath(index) === 1">
+              <button class="btn btn-link" type="button" data-toggle="collapse" :data-target="'#collapse-'+doMath(index)" aria-expanded="true" :aria-controls="'collapse-'+doMath(index)">
+                {{ item.TxHash }}
+              </button>
+              <a v-bind:href="txHashLink(item.TxHash)" target="_blank" class="view-on-eth">View on Etherscan</a>
+            </template>
+            <template v-else>
+              <button class="btn btn-link" type="button" data-toggle="collapse" :data-target="'#collapse-'+doMath(index)" aria-expanded="false" :aria-controls="'collapse-'+doMath(index)">
+                {{ item.TxHash }}
+              </button>
+              <a v-bind:href="txHashLink(item.TxHash)" target="_blank" class="view-on-eth">View on Etherscan</a>
+            </template>
           </h5>
         </div>
         <div v-bind:id="'collapse-'+doMath(index)" class="collapse" v-bind:class="{'show': doMath(index)===1}" :aria-labelledby="'heading-'+doMath(index)" data-parent="#accordionTransaction">
@@ -31,17 +30,10 @@
           </div>
         </div>
       </div>
-
-      <!-- <template>
-        <div class="row">
-          <div class="col-md-12 navigation-box">
-            <nav aria-label="Page navigation example" class="navigation">
-              <paginate v-model="page" :page-count="page" :container-class="pagination" :prev-text="prev" :next-text="next" :prev-class="'page-item'" :next-class="'page-item'" :page-class="'page-item'" :click-handler="pagiCallback" :active-class="'active'" :page-range="2"></paginate>
-            </nav>
-          </div>
-        </div>
-      </template> -->
-      
+      <div class="transaction-more" v-if="is_loadmore">
+        <div class="loader" v-show="load_loading"></div>
+        <a href="" @click="loadMore($event)" class="btn btn-primary">Load more</a>
+      </div>
     </div>
 
     <div class="page-loading" v-if="pageLoading"></div>
@@ -59,16 +51,14 @@
       keyJson = JSON.parse(keyJson)
 
       return {
-        transactions: null,
+        is_loadmore: true,
+        load_loading: false,
+        transactions: [],
         pageLoading: true,
         sender: '0x'+keyJson.address,
         nanjAddress: localStorage.getItem("nanjAddress"),
-        page: 0,
+        maxPage: 0,
         curPage: 0,
-        getTxLink: '',
-        pagination: 'pagination',
-        prev: 'Previous',
-        next: 'Next'
       }
     },
     mounted() {
@@ -83,28 +73,33 @@
       axios.get(_urlSenderTrans, headers).then(response => {
             const data = response.data.data
             if (data.total > 0) {
-              self.page = data.max_page
-              self.curPage = data.page
-              let limit = data.limit
+              self.maxPage = parseInt(data.max_page)
+              self.curPage = parseInt(data.page)
+              // let limit = data.limit
 
               self.transactions = data.items
               self.pageLoading = false
               self.getTxLink = self.sender
+              self.checkLoadmore()
               return
             }
 
             axios.get(_urlNANJTrans, headers).then(res => {
               const data = res.data.data 
               if (data.total > 0) {
-                self.page = data.max_page
-                self.curPage = data.page
-                let limit = data.limit
+                self.maxPage = parseInt(data.max_page)
+                self.curPage = parseInt(data.page)
+                // let limit = data.limit
 
                 self.transactions = data.items
                 self.pageLoading = false
                 self.getTxLink = self.nanjAddress
+                self.checkLoadmore()
                 return
               }
+
+              self.checkLoadmore()
+              self.pageLoading = false
             })
           })
     },
@@ -118,24 +113,46 @@
       txHashLink(hash) {
         return this.$root.HTTP_TX+'/tx/'+hash
       },
-      pagiCallback: function(pageNum) {
-
-        console.log('pageNum: '+pageNum)
+      checkLoadmore() {
+        if (this.curPage == this.maxPage) {
+          this.is_loadmore = false
+        }
+      },
+      loadMore: function(event) {
+        if (event) event.preventDefault();
+        this.load_loading = true
+        if (this.curPage == this.maxPage) {
+          this.load_loading = false
+          return
+        }
 
         const self = this
-        let _url = self.doURLGetTx(self.getTxLink, pageNum)
+
+        let getPage = parseInt(self.curPage)+1
+        self.curPage = getPage
+        let _url = self.doURLGetTx(self.getTxLink, getPage)
         const headers = { 'headers': { 'Client-ID': self.$root.CLIENT_ID, 'Secret-Key': self.$root.SECRET_KEY } }
 
         axios.get(_url, headers).then(res => {
               const data = res.data.data 
               if (data.total > 0) {
-                self.page = data.max_page
-                let currentPage = data.page
-                let limit = data.limit
 
-                self.transactions = data.items
+                if (data.items.length) {
+                  for (var k in data.items) { 
+                    self.transactions.push(data.items[k]);
+                  }
+                }
+                
+                self.pageLoading = false
+                self.getTxLink = self.sender
+                self.checkLoadmore()
+                this.load_loading = false
                 return
               }
+
+              self.checkLoadmore()
+              self.pageLoading = false
+              this.load_loading = false
             })
       }
     } //end methods
@@ -152,4 +169,6 @@
   .navigation-box {text-align: center; margin-top: 15px;}
   nav.navigation {display: inline-block;width: auto;}
   .page-item.active a {z-index: 1; color: #fff; background-color: #007bff; border-color: #007bff; }
+  .view-on-eth{color: #255987; font-size: 0.7em; float: right; margin-top: 10px; }
+  .transaction-more {text-align: center; padding: 20px 0;}
 </style>

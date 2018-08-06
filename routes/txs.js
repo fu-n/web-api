@@ -49,7 +49,7 @@ router.post('/tx/getRelayerTxHash', [middleware.transaction], async function (re
 	    if (balanceNanj <= 0 || inputValue > balanceNanj)
 	    	return res.status(403).json({message: "Your NANJ Amount not enought."});
 
-		let hash = await generateData.getRelayerTxHash(req.body.from, req.body.to, inputValue+"00000000")
+		let hash = await generateData.getRelayerTxHash(req.body.from, req.body.to, inputValue+"00000000", req.body.message)
 
         return res.status(200).json(hash)
     })

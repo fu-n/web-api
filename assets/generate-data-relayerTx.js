@@ -185,10 +185,10 @@ const hashSign = async function (sender, txRelay, whitelistOwner, destinationAdd
     return response
 }
 
-const getRelayerTxHash = async function(from, to, transferAmount) {
+const getRelayerTxHash = async function(from, to, transferAmount, message="") {
     let founderWallet = await getAddressNanj(from)
     let types = ['address', 'address', 'address', 'uint256', 'bytes', 'bytes32']
-    let nanjTransferdata = encodeFunctionTxData('transfer', ['address', 'uint256'], [to, transferAmount])
+    let nanjTransferdata = encodeFunctionTxData('transfer', ['address', 'uint256', 'bytes'], [to, transferAmount, message])
     let destination = NANJCOINAddress
     let value = 0
     let data = nanjTransferdata 

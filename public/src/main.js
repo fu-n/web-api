@@ -11,7 +11,6 @@ $('.collapse').collapse();
 import Vue from 'vue'
 import App from './components/App.vue'
 import VueQRCodeComponent from 'vue-qrcode-component'
-import Paginate from 'vuejs-paginate'
 
 import VuejsDialog from "vuejs-dialog"
 
@@ -20,7 +19,6 @@ Vue.use(VuejsDialog)
 Vue.config.devtools = false
 
 Vue.component('qr-code', VueQRCodeComponent)
-Vue.component('paginate', Paginate)
 
 new Vue({
   el: 'app',

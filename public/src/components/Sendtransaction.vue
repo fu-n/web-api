@@ -4,7 +4,7 @@
     
     <div class="alert alert-success" v-if="txsSuccess">
       <p class="mb-0"><strong>Well done!</strong> Your transaction is successfully.</p>
-      <p class="mb-0"><strong>Txhash: </strong> <a v-bind:href="txHashLink" target="_blank">{{ txHash }}</a></p>
+      <p class="mb-0 word-break-all"><strong>Txhash: </strong> <a v-bind:href="txHashLink" target="_blank">{{ txHash }}</a></p>
     </div>
 
     <div class="alert alert-danger" v-if="errors.length > 0">
@@ -19,13 +19,16 @@
 
     <form @submit.prevent v-if="sendToken">
       <div class="form-group">
-        <input type="text" class="form-control" name="addFrom" id="addFrom" placeholder="Send from address" readonly="readonly" v-bind:value="addFrom">
+        <input type="text" class="form-control" name="addFrom" id="addFrom" placeholder="Send from address" readonly="readonly" v-bind:value="addFromNanj">
       </div>
       <div class="form-group">
         <input type="text" class="form-control" name="addTo" id="addTo" placeholder="Send to address" v-model="addTo">
       </div>
       <div class="form-group">
         <input type="number" class="form-control" name="sendAmount" id="sendAmount" placeholder="Amount" v-model="sendAmount">
+      </div>
+      <div class="form-group">
+        <textarea class="form-control" name="message" id="message" v-model="message" placeholder="Message"></textarea>
       </div>
       <button type="submit" class="btn btn-info" @click="send">Send</button>
     </form>
@@ -57,9 +60,11 @@
         password: null,
         sendToken: true,
         cfrPasspharse: false,
+        addFromNanj: localStorage.getItem("nanjAddress"),
         addFrom: '0x'+keyJson.address,
         addTo: null,
         sendAmount: null,
+        message: null,
         txsSuccess: false,
         submitted: false,
         pageLoading: false,
@@ -136,7 +141,8 @@
         let data = {
           from: self.addFrom,
           to: self.addTo,
-          value: self.sendAmount
+          value: self.sendAmount,
+          message: self.message
         };
 
         axios['post'](uri, data)
@@ -147,7 +153,8 @@
 
               let _uri = '/api/tx/webRelayTx'
               let _dataTx = {
-                hash: hashSign
+                hash: hashSign,
+                message: self.message
               }
 
               return axios['post'](_uri, _dataTx);
@@ -163,6 +170,7 @@
               self.sendToken = false;
               self.cfrPasspharse = false;
               self.addTo = null;
+              self.message = null;
               self.sendAmount = null;
               self.txsSuccess = true;
 
@@ -206,5 +214,8 @@
   }
   .alert-danger {
     text-align: left;
+  }
+  .word-break-all {
+    word-break: break-all;
   }
 </style>

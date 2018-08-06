@@ -9,20 +9,28 @@
     <div class="container">
       <div class="row justify-content-center menu">
           <div class="col-10">
-              <h1><img src="https://nanjcoin.com/img/header_img_01.png" alt="NANJ"><span>NANJCOIN</span></h1>
+              <h1><a href=""><img src="https://nanjcoin.com/img/header_img_01.png" alt="NANJ"><span>NANJCOIN</span></a></h1>
               <ul class="nav d-none d-md-block">
-                <li><a href="https://nanjcoin.com" target="_blank">ABOUT</a></li>
-                <li><a href="" @click="showCreateWalletForm($event)">Create Wallet</a></li>
-                <li><a href="" @click="showImportWalletForm($event)">Import Wallet</a></li>
-                <li><a href="" @click="makeTransaction($event)">Transaction</a></li>
+                <li v-if="!this.$root.keyStoreDownload && this.$root.keyStoreDownload.length == 0"><a href="" @click="showCreateWalletForm($event)">Create Wallet</a></li>
+                <li v-if="!this.$root.keyStoreDownload && this.$root.keyStoreDownload.length == 0"><a href="" @click="showImportWalletForm($event)">Import Wallet</a></li>
               </ul>
               
               <ul class="navbar-nav right-menu" v-if="this.$root.keyStoreDownload && this.$root.keyStoreDownload.length > 0">
+                <li class="nav-item dropdown li-swicth-account">
+                  <a id="navbarDropdown" class="nav-link dropdown-toggle swicth-account-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="swicth-account"></span></a> 
+                  <div aria-labelledby="navbarDropdown" class="dropdown-menu dropdown-menu-right">
+                    
+                    <a href="" @click="showCreateWalletForm($event)" class="dropdown-item account">Create Wallet</a>
+                    <a href="" @click="showImportWalletForm($event)" class="dropdown-item account">Import Wallet</a>
+                  </div>
+                </li>
+
                 <li class="nav-item dropdown">
                   <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account <span class="caret"></span></a> 
                   <div aria-labelledby="navbarDropdown" class="dropdown-menu dropdown-menu-right">
                     <a v-bind:href="this.$root.keyStoreDownload" download="keyStore.json" class="dropdown-item account">Download Key Store File</a> 
                     <a href="" @click="myWallet($event)" class="dropdown-item account">Wallet Info</a>
+                    <a href="" @click="makeTransaction($event)" class="dropdown-item account">Transaction</a>
                   </div>
                 </li>
               </ul>
@@ -144,6 +152,7 @@
 </script>
 <style>
   html, body {width: 100%; height: 100%; } body {background-color: #f5f8fa; }
+  .loader {border: 4px solid #f3f3f3; /* Light grey */ border-top: 4px solid #0E1E2D; /* Blue */ border-radius: 50%; width: 20px; height: 20px; animation: spin 2s linear infinite; margin: 10px auto 10px auto}
   #app {position: relative; width: 100%; height: 100%; position: relative; background: #000000; color: #ffffff; }
   #headerVideo {display: block; position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden; }
   #headerVideo:after {content: ""; display: block; position: relative; top: 0; left: 0; width: 100%; height: 100%; background: url(https://nanjcoin.com/img/headerVideo_bg_01.png) repeat left top; background-size: 2px 2px; }
@@ -151,21 +160,26 @@
   .video video {width: 100%; height: auto; }
   .menu h1 {padding-top: 10px; }
   .menu h1 img {max-width: 44px; }
-  .menu h1 span {font-family: 'Sarpanch', sans-serif; -webkit-transform: scaleY(0.75); transform: scaleY(0.75); -webkit-transform-origin: left top; transform-origin: left top; letter-spacing: 0.12em; display: inline-block; margin-left: 14px; font-size: 30px; line-height: 1em; }
+  .menu h1 span {font-family: 'Sarpanch', sans-serif; -webkit-transform: scaleY(0.75); transform: scaleY(0.75); -webkit-transform-origin: left top; transform-origin: left top; letter-spacing: 0.12em; display: inline-block; margin-left: 14px; font-size: 30px; line-height: 1em; color: #fff;}
   .nav {font-family: 'Sarpanch', sans-serif; -webkit-transform: scaleY(0.75); transform: scaleY(0.75); -webkit-transform-origin: left top; transform-origin: left top; letter-spacing: 0.12em; margin: 0; padding: 0; position: absolute; left: 285px; top: 30px; font-size: 13px; line-height: 1.4em; }
   .nav li {display: inline-block; margin-right: 10px; list-style: none; }
   .nav li a {text-transform: uppercase; color: #fff; }
   .fv .text {position: absolute; left: 110px; top: 200px; }
   .fv .text h2 {font-family: 'Sarpanch', sans-serif; -webkit-transform: scaleY(0.75); transform: scaleY(0.75); -webkit-transform-origin: left top; transform-origin: left top; letter-spacing: 0.12em; margin: 0; font-size: 60px; line-height: 1em; margin-bottom: -20px; }
   .fv .text h2 span {display: inline-block; margin-right: 15px; }
-  .fv .image {position: absolute; right: 80px; top: 55px; }
+  .fv .image {position: absolute; right: 80px; top: 55px; z-index: 1;}
   .fv .image img {max-width: 402px; }
   section.content {padding: 40px 0; }
   section.content h2 {font-family: 'Sarpanch', sans-serif; -webkit-transform: scaleY(1); transform: scaleY(1); -webkit-transform-origin: left top; transform-origin: left top; letter-spacing: 0.12em; margin-left: 14px; font-size: 28px; line-height: 1.5em; }
   .create-wallet-form {display: none;}
 
   .nav-link.dropdown-toggle {display: inline-block; }
-  .right-menu {font-family: 'Sarpanch', sans-serif; -webkit-transform: scaleY(0.75); transform: scaleY(0.75); -webkit-transform-origin: left top; transform-origin: left top; letter-spacing: 0.12em; margin: 0; padding: 0; position: absolute; right: 0; top: 30px; font-size: 13px; line-height: 1.4em; }
+  .right-menu {font-family: 'Sarpanch', sans-serif; -webkit-transform: scaleY(0.75); transform: scaleY(0.75); -webkit-transform-origin: left top; transform-origin: left top; letter-spacing: 0.12em; margin: 0; padding: 0; position: absolute; right: 0; top: 30px; font-size: 13px; line-height: 1.4em; z-index: 99999}
   #navbarDropdown {font-size: 1em; color: #fff; text-transform: uppercase; padding: 0; }
   .dropdown-item.account {padding: 0.8rem 1.5rem; }
+  .swicth-account-toggle:after {display: none;}
+  .li-swicth-account {position: absolute; left: -40px; top: -15px;}
+  .swicth-account{display: inline-block; background: url(/assets/images/switch_acc.svg) center center no-repeat transparent; height: 40px; width: 30px; }
+  .swicth-account img{width: 100%;height: 100%;}
+  .navbar-nav .dropdown-menu {z-index: 555;}
 </style>

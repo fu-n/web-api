@@ -5,23 +5,16 @@
       <div class="qr-box">
         <div class="row">
           <div class="col-md-6">
-            <p><strong>Your Address (ETH)</strong></p>
-            <qr-code :text="address" :size="size" :bg-color="bgColor" :color="fgColor" error-level="L"></qr-code>
-            <p>{{address}}</p>
-          </div>
-          <div class="col-md-6">
             <p><strong>Your Address (NANJ)</strong></p>
             <div class="loader" v-if="loading"></div>
             <div v-if="mountDone">
               <qr-code :text="nanj" :size="size" :bg-color="bgColor" :color="fgColor" error-level="L"></qr-code>
               <p>{{nanj}}</p>
-              <p>Balance: {{nanjBalance}} <button type="button" class="btn btn-info" @click="sendTransaction($event)">Send Transaction</button></p>
+              <p>Balance: {{nanjBalance}}</p>
             </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div v-if="is_sendnanj">
+          <div class="col-md-6">
+            <div v-if="mountDone">
               <sendtransaction></sendtransaction>
             </div>
           </div>
@@ -41,7 +34,6 @@
   export default {
     data() {
       return {
-        is_sendnanj: false,
         mountDone: false,
         loading: true,
         address: '',
@@ -74,16 +66,21 @@
           })
 
     },
+    created() {
+      // console.log('created')
+    },
     components: {Sendtransaction},
     methods: {
+      updateComponent() {
+        // Object.assign(this.$data, this.$options.data.call(this)) 
+      },
       sendTransaction(event) {
         if (event) event.preventDefault();
+        
         if (localStorage.getItem("nanjKeystore") === null) {
           this.$dialog.alert({title: 'Info', body: 'Please create or import your wallet!', buttonLabel: 'Yes'});
           return;
         }
-        this.is_sendnanj = true
-        
       },
     } //end methods
   }
@@ -93,5 +90,4 @@
   .qr-box {padding: 20px 0; background: #FFFFFF; color: #000; text-align: center;}
   .qr-box img {margin: 0 auto;}
   .qr-box p {margin: 10px 0;}
-  .loader {border: 4px solid #f3f3f3; /* Light grey */ border-top: 4px solid #0E1E2D; /* Blue */ border-radius: 50%; width: 20px; height: 20px; animation: spin 2s linear infinite; margin: 10px auto 10px auto}
 </style>
