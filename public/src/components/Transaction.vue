@@ -36,6 +36,10 @@
       </div>
     </div>
 
+    <div class="accordion" v-if="!transactions.length && !pageLoading">
+      <h6 class="text-center">Transaction not found.</h6>
+    </div>
+
     <div class="page-loading" v-if="pageLoading"></div>
   </div>
 </template>
@@ -84,23 +88,29 @@
               return
             }
 
-            axios.get(_urlNANJTrans, headers).then(res => {
-              const data = res.data.data 
-              if (data.total > 0) {
-                self.maxPage = parseInt(data.max_page)
-                self.curPage = parseInt(data.page)
-                // let limit = data.limit
+            if (self.nanjAddress.length) {
+              axios.get(_urlNANJTrans, headers).then(res => {
+                const data = res.data.data 
+                if (data.total > 0) {
+                  self.maxPage = parseInt(data.max_page)
+                  self.curPage = parseInt(data.page)
+                  // let limit = data.limit
 
-                self.transactions = data.items
-                self.pageLoading = false
-                self.getTxLink = self.nanjAddress
+                  self.transactions = data.items
+                  self.pageLoading = false
+                  self.getTxLink = self.nanjAddress
+                  self.checkLoadmore()
+                  return
+                }
+
                 self.checkLoadmore()
-                return
-              }
-
-              self.checkLoadmore()
+                self.pageLoading = false
+              })
+            } else {
               self.pageLoading = false
-            })
+              self.getTxLink = self.sender
+              return
+            }
           })
     },
     methods: {

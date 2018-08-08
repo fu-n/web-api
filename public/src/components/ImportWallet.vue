@@ -37,7 +37,9 @@
       <div class="form-group">
         <input type="password" name="password" class="form-control" placeholder="Password" v-model="password">
       </div>
-      <button type="submit" class="btn btn-info" @click="importWallet" :disabled="submitted == 1">Submit</button>
+      <div class="form-group text-center">
+        <button type="submit" class="btn btn-info" @click="importWallet" :disabled="submitted == 1">Submit</button>
+      </div>
     </form>
   </div>
 </template>

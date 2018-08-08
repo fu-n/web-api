@@ -8,7 +8,7 @@
 
     <div class="container">
       <div class="row justify-content-center menu">
-          <div class="col-10">
+          <div class="col-11">
               <h1><a href=""><img src="https://nanjcoin.com/img/header_img_01.png" alt="NANJ"><span>NANJCOIN</span></a></h1>
               <ul class="nav d-none d-md-block">
                 <li v-if="!this.$root.keyStoreDownload && this.$root.keyStoreDownload.length == 0"><a href="" @click="showCreateWalletForm($event)">Create Wallet</a></li>
@@ -50,7 +50,7 @@
     <section class="content">
       <div class="container">
         <div class="row justify-content-center">
-          <div class="col-10">
+          <div class="col-11">
             <div v-if="is_create">
               <create-wallet></create-wallet>
             </div>
@@ -152,7 +152,7 @@
 </script>
 <style>
   html, body {width: 100%; height: 100%; } body {background-color: #f5f8fa; }
-  .loader {border: 4px solid #f3f3f3; /* Light grey */ border-top: 4px solid #0E1E2D; /* Blue */ border-radius: 50%; width: 20px; height: 20px; animation: spin 2s linear infinite; margin: 10px auto 10px auto}
+  .loader {border: 4px solid #f3f3f3; border-top: 4px solid #0E1E2D; border-radius: 50%; width: 20px; height: 20px; animation: spin 2s linear infinite; margin: 10px auto 10px auto}
   #app {position: relative; width: 100%; height: 100%; position: relative; background: #000000; color: #ffffff; }
   #headerVideo {display: block; position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden; }
   #headerVideo:after {content: ""; display: block; position: relative; top: 0; left: 0; width: 100%; height: 100%; background: url(https://nanjcoin.com/img/headerVideo_bg_01.png) repeat left top; background-size: 2px 2px; }
@@ -182,4 +182,23 @@
   .swicth-account{display: inline-block; background: url(/assets/images/switch_acc.svg) center center no-repeat transparent; height: 40px; width: 30px; }
   .swicth-account img{width: 100%;height: 100%;}
   .navbar-nav .dropdown-menu {z-index: 555;}
+  .wave-dot span{transition: all 500ms ease; background: #4A72DA; box-shadow: 1px 2px 3px #999; height: 5px; width: 5px; display: inline-block; border-radius: 5px; animation: wave 2s ease  infinite; }
+  .wave-dot span:nth-child(1){  animation-delay: 0; }
+  .wave-dot span:nth-child(2){  animation-delay: 100ms; }
+  .wave-dot span:nth-child(3){  animation-delay: 200ms; }
+  .wave-dot span:nth-child(4){  animation-delay: 300ms; }
+  @keyframes wave{0%, 40%, 100% {transform: translate(0, 0); background-color: #4A72DA; } 10% {transform: translate(0, -15px); background-color: red; } }
+  @media only screen and (max-width: 768px) {
+    #headerVideo, .fv .image, .menu h1 span {display: none;}
+    #app {background: #3278AB}
+    .fv .text {top: 100px;left: 50%; transform: translate(-50%);}
+    .fv .text h2 {text-align: center;}
+    .fv .text h2 span {margin-right: 0;}
+    .page-loading:after {margin: 10px auto 10px -30px;}
+    .card-header h5 { word-break: break-all;}
+    .card-header h5 button {white-space: nowrap; height: 35px; overflow: hidden; text-overflow: ellipsis; display: block; width: 100%;} 
+    section.content h2 {margin-left: 0}
+    .view-on-eth {display: block; width: 100%; text-align: center;}
+    .nanj-address {word-break: break-all;}
+  }
 </style>

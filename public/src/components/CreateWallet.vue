@@ -39,7 +39,9 @@
         <input type="password" name="password" class="form-control" placeholder="Password" v-model="password">
         <p class="help-block">Default: 123456789</p>
       </div>
-      <button type="submit" class="btn btn-info" @click="create">Submit</button>
+      <div class="form-group text-center">
+        <button type="submit" class="btn btn-info" @click="create">Submit</button>
+      </div>
     </form>
   </div>
 </template>

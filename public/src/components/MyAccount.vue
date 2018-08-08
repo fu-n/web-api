@@ -3,20 +3,21 @@
     <div class="col-xs-12">
       <h2>Wallet Info</h2>
       <div class="qr-box">
-        <div class="row">
+        <div class="loader" v-if="loading"></div>
+        <div class="row" v-if="mountDone">
           <div class="col-md-6">
-            <p><strong>Your Address (NANJ)</strong></p>
-            <div class="loader" v-if="loading"></div>
-            <div v-if="mountDone">
+              <p><strong>Your Address (NANJ)</strong></p>
               <qr-code :text="nanj" :size="size" :bg-color="bgColor" :color="fgColor" error-level="L"></qr-code>
-              <p>{{nanj}}</p>
-              <p>Balance: {{nanjBalance}}</p>
-            </div>
+              <p class="nanj-address">{{nanj}}</p>
+              <template v-if="!loadingBalance">
+                <p>Balance: <span class="wave-dot"><span></span><span></span><span></span><span></span></span></p>
+              </template>
+              <template v-else>
+                <p>Balance: {{nanjBalance}}</p>
+              </template>
           </div>
           <div class="col-md-6">
-            <div v-if="mountDone">
-              <sendtransaction></sendtransaction>
-            </div>
+            <sendtransaction></sendtransaction>
           </div>
         </div>
       </div>
@@ -41,7 +42,8 @@
         nanjBalance: 0,
         bgColor: "#FFFFFF",
         fgColor: "#000000",
-        size: 256
+        size: 256,
+        loadingBalance: true
       }
     },
     mounted() {
@@ -50,18 +52,18 @@
       keyJson = JSON.parse(keyJson)
       self.address = '0x'+keyJson.address
 
+      if (localStorage.getItem("nanjAddress") !== null) {
+        self.loadingBalance = false
+        self.loading = false
+        self.mountDone = true
+      }
+
       axios.get('/api/wallet/check?address='+self.address).then(response => {
             if (response.data.data.address !== self.address) {
               self.nanj = response.data.data.address
-
-              if (localStorage.getItem("nanjAddress") !== null) {
-                localStorage.removeItem('nanjAddress')
-              }
               localStorage.setItem('nanjAddress', self.nanj)
-
               self.nanjBalance = response.data.data.balanceNanj
-              self.loading = false
-              self.mountDone = true
+              self.loadingBalance = true
             }
           })
 
