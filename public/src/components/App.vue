@@ -10,9 +10,9 @@
       <div class="row justify-content-center menu">
           <div class="col-11">
               <h1><a href=""><img src="https://nanjcoin.com/img/header_img_01.png" alt="NANJ"><span>NANJCOIN</span></a></h1>
-              <ul class="nav d-none d-md-block">
-                <li v-if="!this.$root.keyStoreDownload && this.$root.keyStoreDownload.length == 0"><a href="" @click="showCreateWalletForm($event)">Create Wallet</a></li>
-                <li v-if="!this.$root.keyStoreDownload && this.$root.keyStoreDownload.length == 0"><a href="" @click="showImportWalletForm($event)">Import Wallet</a></li>
+              <ul class="nav d-none d-md-block right-menu" v-if="!this.$root.keyStoreDownload">
+                <li><a href="" @click="showImportWalletForm($event)">Import Wallet</a></li>
+                <li><a href="" @click="showCreateWalletForm($event)">Create Wallet</a></li>
               </ul>
               
               <ul class="navbar-nav right-menu" v-if="this.$root.keyStoreDownload && this.$root.keyStoreDownload.length > 0">
@@ -154,6 +154,7 @@
   html, body {width: 100%; height: 100%; } body {background-color: #f5f8fa; }
   .loader {border: 4px solid #f3f3f3; border-top: 4px solid #0E1E2D; border-radius: 50%; width: 20px; height: 20px; animation: spin 2s linear infinite; margin: 10px auto 10px auto}
   #app {position: relative; width: 100%; height: 100%; position: relative; background: #000000; color: #ffffff; }
+  .d-md-block li {float: right;}
   #headerVideo {display: block; position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden; }
   #headerVideo:after {content: ""; display: block; position: relative; top: 0; left: 0; width: 100%; height: 100%; background: url(https://nanjcoin.com/img/headerVideo_bg_01.png) repeat left top; background-size: 2px 2px; }
   .video {width: 100%; height: 100%; position: absolute; top: 0; left: 0; }

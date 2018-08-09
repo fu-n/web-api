@@ -32,6 +32,10 @@
 
     <form @submit.prevent v-if="Object.keys(myWallet).length <= 0">
       <div class="form-group">
+        <input type="text" name="name" class="form-control" placeholder="Name">
+        <p class="help-block">Default: {{ name }}</p>
+      </div>
+      <div class="form-group">
         <textarea class="form-control" placeholder="Mnemonic Phrase" v-model="mnemonic">
         </textarea>
       </div>
@@ -55,12 +59,18 @@
 
   export default {
     data() {
+      let accounts = new Array()
+      if (localStorage.getItem("accounts") !== null) {
+        accounts = JSON.parse(localStorage.getItem("accounts"))
+      }
+      
       return {
         myWallet: {},
         errors: [],
         mnemonic: lightwallet.keystore.generateRandomSeed(),
         password: '',
-        titlePage: 'Create Wallet'
+        titlePage: 'Create Wallet',
+        name: 'Account '+(accounts.length+1)
       }
     },
     methods: {
@@ -89,15 +99,27 @@
               if (typeof response.data.data === 'object') {
                 self.myWallet = response.data.data;
                 let obj = self.myWallet.keyStore;
-                self.myWallet.keyStoreDownload = 'data:'+"text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
+                let objStringify = JSON.stringify(obj)
+                self.myWallet.keyStoreDownload = 'data:'+"text/json;charset=utf-8," + encodeURIComponent(objStringify);
 
-                // set to localStore
+                let accounts = new Array()
+                if (localStorage.getItem("accounts") !== null) {
+                  accounts = JSON.parse(localStorage.getItem("accounts"))
+                }
+                let account = {}
+                account.name = self.name
+                account.keystore = objStringify
+                account.nanj = self.myWallet.nanj
+                accounts.push(account)
+                localStorage.setItem('accounts', JSON.stringify(accounts))
+
+                // set to localStore 
                 if (localStorage.getItem("nanjKeystore") !== null) {
                   localStorage.removeItem('nanjKeystore')
                 }
-                localStorage.setItem('nanjKeystore', JSON.stringify(obj))
+                localStorage.setItem('nanjKeystore', objStringify)
 
-                self.$root.keyStoreDownload = 'data:'+"text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj))
+                self.$root.keyStoreDownload = 'data:'+"text/json;charset=utf-8," + encodeURIComponent(objStringify)
 
                 if (localStorage.getItem("nanjAddress") !== null) {
                   localStorage.removeItem('nanjAddress')
