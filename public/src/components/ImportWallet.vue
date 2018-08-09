@@ -32,8 +32,8 @@
 
     <form @submit.prevent v-if="Object.keys(myWallet).length <= 0">
       <div class="form-group">
-        <input type="text" name="name" class="form-control" placeholder="Name">
-        <p class="help-block">Default: {{ name }}</p>
+        <input type="text" name="name" v-model="name" class="form-control" placeholder="Name">
+        <p class="help-block">Default: {{ nameDef }}</p>
       </div>
       <div class="form-group">
         <input type="file" class="form-control" name="keystore" id="keystore" ref="keystoreFile" v-on:change="keystoreOnChange">
@@ -60,7 +60,7 @@
       if (localStorage.getItem("accounts") !== null) {
         accounts = JSON.parse(localStorage.getItem("accounts"))
       }
-      
+
       return {
         myWallet: {},
         errors: [],
@@ -69,7 +69,8 @@
         formData: new FormData(),
         titlePage: 'Import Wallet',
         submitted: false,
-        name: 'Account '+(accounts.length+1)
+        name: '',
+        nameDef: 'Account '+(accounts.length+1)
       }
     },
     methods: {
@@ -116,11 +117,15 @@
                   accounts = JSON.parse(localStorage.getItem("accounts"))
                 }
                 let account = {}
-                account.name = self.name
+                account.name = self.name || self.nameDef
+                account.ethAddress = self.myWallet.address.slice(2)
                 account.keystore = objStringify
                 account.nanj = self.myWallet.nanj
                 accounts.push(account)
                 localStorage.setItem('accounts', JSON.stringify(accounts))
+
+                self.$parent.accounts = JSON.parse(localStorage.getItem("accounts"))
+                self.$parent.accountActived = self.myWallet.address.slice(2)
 
                 // set to localStore
                 if (localStorage.getItem("nanjKeystore") !== null) {

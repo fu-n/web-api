@@ -6,6 +6,8 @@ require('bootstrap')
 
 import 'bootstrap/dist/css/bootstrap.css';
 
+import env from '../../.env.js'
+
 $('.collapse').collapse();
 
 import Vue from 'vue'
@@ -27,13 +29,14 @@ new Vue({
     if (localStorage.getItem("nanjKeystore") !== null) {
       _keyStore = 'data:'+"text/json;charset=utf-8," + encodeURIComponent(localStorage.getItem("nanjKeystore"))
     }
+
     return {
       keyStoreDownload: _keyStore,
       pageLoading: false,
-      CLIENT_ID: '575958089608922877',
-      SECRET_KEY: 'fF5MSugBFsUEoTiFIiRdUa1rFc5Y8119JVzyWUzJ',
-      NANJ_HOST: 'staging.nanjcoin.com',
-      HTTP_TX: 'https://ropsten.etherscan.io',
+      CLIENT_ID: env.CLIENT_ID,
+      SECRET_KEY: env.SECRET_KEY,
+      NANJ_HOST: env.NANJ_HOST,
+      HTTP_TX: env.HTTP_TX,
     }
     
   },

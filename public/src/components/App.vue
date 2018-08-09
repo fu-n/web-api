@@ -14,11 +14,17 @@
                 <li><a href="" @click="showImportWalletForm($event)">Import Wallet</a></li>
                 <li><a href="" @click="showCreateWalletForm($event)">Create Wallet</a></li>
               </ul>
+              <ul class="top-menu-mb" v-if="!this.$root.keyStoreDownload">
+                <li><a href="" @click="showCreateWalletForm($event)"><img src="/assets/images/plus-btn-white.svg"></a></li>
+                <li><a href="" @click="showImportWalletForm($event)"><img src="/assets/images/import-account.svg"></a></li>
+              </ul>
               
               <ul class="navbar-nav right-menu" v-if="this.$root.keyStoreDownload && this.$root.keyStoreDownload.length > 0">
                 <li class="nav-item dropdown li-swicth-account">
                   <a id="navbarDropdown" class="nav-link dropdown-toggle swicth-account-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="swicth-account"></span></a> 
                   <div aria-labelledby="navbarDropdown" class="dropdown-menu dropdown-menu-right">
+
+                    <a href="" @click="swicthAccount($event, index)" class="dropdown-item account" v-bind:class="{'active': account.ethAddress==accountActived}" v-for="(account, index) in accounts">{{account.name}}</a>
                     
                     <a href="" @click="showCreateWalletForm($event)" class="dropdown-item account">Create Wallet</a>
                     <a href="" @click="showImportWalletForm($event)" class="dropdown-item account">Import Wallet</a>
@@ -86,13 +92,34 @@
     name: 'app',
     props: ['show'],
     data() {
+      let accounts = new Array()
+      if (localStorage.getItem("accounts") !== null) {
+        accounts = JSON.parse(localStorage.getItem("accounts"))
+      }
+
+      let accountActived = ''
+      if (localStorage.getItem("nanjKeystore") !== null) {
+        let _keyStore = localStorage.getItem("nanjKeystore")
+        _keyStore = JSON.parse(_keyStore)
+        accountActived = _keyStore.address
+      }
+
       return {
         is_home: true,
         is_create: false,
         is_import: false,
         is_trans: false,
-        is_account: false
+        is_account: false,
+        accounts: accounts,
+        accountActived: accountActived
       }
+    },
+    mounted: function () {
+      document.addEventListener("keydown", (e) => {
+        if (this.show && e.keyCode == 27) {
+          this.close();
+        }
+      });
     },
     components: {CreateWallet, ImportWallet, Transaction, MyAccount},
     methods: {
@@ -139,14 +166,29 @@
         this.is_import = false;
         this.is_trans = false;
         this.is_account = true;
-      }
-    },
-    mounted: function () {
-      document.addEventListener("keydown", (e) => {
-        if (this.show && e.keyCode == 27) {
-          this.close();
+      },
+      swicthAccount(event, index) {
+        if (event) event.preventDefault();
+        
+        let accounts = new Array()
+        if (localStorage.getItem("accounts") !== null) {
+          accounts = JSON.parse(localStorage.getItem("accounts"))
         }
-      });
+
+        if (!accounts.length) 
+          return false;
+
+        let account = accounts[index]
+
+        localStorage.setItem('nanjKeystore', account.keystore)
+        localStorage.setItem('nanjAddress', account.nanj)
+
+        // alert(account.name+' - '+account.ethAddress + ' - '+ account.nanj)
+
+        this.$root.keyStoreDownload = 'data:'+"text/json;charset=utf-8," + encodeURIComponent(account.keystore)
+
+        location.reload(true)
+      }
     }
   }
 </script>
@@ -162,6 +204,7 @@
   .menu h1 {padding-top: 10px; }
   .menu h1 img {max-width: 44px; }
   .menu h1 span {font-family: 'Sarpanch', sans-serif; -webkit-transform: scaleY(0.75); transform: scaleY(0.75); -webkit-transform-origin: left top; transform-origin: left top; letter-spacing: 0.12em; display: inline-block; margin-left: 14px; font-size: 30px; line-height: 1em; color: #fff;}
+  .top-menu-mb {display: none;}
   .nav {font-family: 'Sarpanch', sans-serif; -webkit-transform: scaleY(0.75); transform: scaleY(0.75); -webkit-transform-origin: left top; transform-origin: left top; letter-spacing: 0.12em; margin: 0; padding: 0; position: absolute; left: 285px; top: 30px; font-size: 13px; line-height: 1.4em; }
   .nav li {display: inline-block; margin-right: 10px; list-style: none; }
   .nav li a {text-transform: uppercase; color: #fff; }
@@ -201,5 +244,8 @@
     section.content h2 {margin-left: 0}
     .view-on-eth {display: block; width: 100%; text-align: center;}
     .nanj-address {word-break: break-all;}
+    .top-menu-mb {display: block;position: absolute; right: 0; padding: 0; top: 22px;}
+    .top-menu-mb li {display: inline-block;margin-right:10px;}
+    .top-menu-mb a {display: block; width: 30px; height: 30px; border-radius: 30px; border: 1px solid #fff; text-align: center;}
   }
 </style>

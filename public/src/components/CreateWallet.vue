@@ -32,8 +32,8 @@
 
     <form @submit.prevent v-if="Object.keys(myWallet).length <= 0">
       <div class="form-group">
-        <input type="text" name="name" class="form-control" placeholder="Name">
-        <p class="help-block">Default: {{ name }}</p>
+        <input type="text" name="name" v-model=name class="form-control" placeholder="Name">
+        <p class="help-block">Default: {{ nameDef }}</p>
       </div>
       <div class="form-group">
         <textarea class="form-control" placeholder="Mnemonic Phrase" v-model="mnemonic">
@@ -63,14 +63,15 @@
       if (localStorage.getItem("accounts") !== null) {
         accounts = JSON.parse(localStorage.getItem("accounts"))
       }
-      
+
       return {
         myWallet: {},
         errors: [],
         mnemonic: lightwallet.keystore.generateRandomSeed(),
         password: '',
         titlePage: 'Create Wallet',
-        name: 'Account '+(accounts.length+1)
+        name: '',
+        nameDef: 'Account '+(accounts.length+1)
       }
     },
     methods: {
@@ -107,11 +108,15 @@
                   accounts = JSON.parse(localStorage.getItem("accounts"))
                 }
                 let account = {}
-                account.name = self.name
+                account.name = self.name || self.nameDef
+                account.ethAddress = self.myWallet.address
                 account.keystore = objStringify
                 account.nanj = self.myWallet.nanj
                 accounts.push(account)
                 localStorage.setItem('accounts', JSON.stringify(accounts))
+
+                self.$parent.accounts = JSON.parse(localStorage.getItem("accounts"))
+                self.$parent.accountActived = self.myWallet.address
 
                 // set to localStore 
                 if (localStorage.getItem("nanjKeystore") !== null) {

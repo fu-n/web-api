@@ -1,6 +1,6 @@
 <template>
   <div class="send-transaction-box">
-    <h2 class="text-center">Send Transaction</h2>
+    <h4 class="text-center">Send Transaction</h4>
     
     <div class="alert alert-success" v-if="txsSuccess">
       <p class="mb-0"><strong>Well done!</strong> Your transaction is successfully.</p>
