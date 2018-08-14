@@ -106,6 +106,11 @@
                 let accounts = new Array()
                 if (localStorage.getItem("accounts") !== null) {
                   accounts = JSON.parse(localStorage.getItem("accounts"))
+
+                  // remove old this account in accounts
+                  let index = accounts.map(function(o) { return o.ethAddress; }).indexOf(self.myWallet.address)
+                  if (typeof accounts[index] != 'undefined')
+                    accounts.splice(index, 1)
                 }
                 let account = {}
                 account.name = self.name || self.nameDef

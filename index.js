@@ -25,9 +25,8 @@ app.use(cors())
 app.use(express.static(path.join(__dirname, '../build')));
 
 var walletRoutes = require('./routes/wallets');
-var txRoutes = require('./routes/txs');
 
-app.use('/api',[], [walletRoutes,txRoutes]);
+app.use('/api',[], [walletRoutes]);
 
 app.get('/', function (req, res, next) {
   res.sendfile('./public/index.html')

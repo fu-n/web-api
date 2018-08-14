@@ -47,9 +47,9 @@
 <script>
   import $ from 'jquery';
   import _ from 'lodash';
-  import axios from 'axios';  
-  import wallet from "./../wallet.js";
-  import utils from 'ethereumjs-util';
+  import axios from 'axios';
+  import assign from 'object-assign'
+  import nanj from  'nanj-web-api-sdk'
 
   export default {
     data() {
@@ -73,7 +73,7 @@
       }
     },
     mounted() {
-      
+
     },
     methods: {
       validate() {
@@ -107,7 +107,6 @@
             password: this.password,
             keystore: localStorage.getItem('nanjKeystore')
           };
-
           var self = this;
           self.submitted = true;
           self.pageLoading = true;
@@ -137,72 +136,49 @@
           self.errors = ['Private key not found. Please try again.'];
         }
 
-        let uri = '/api/tx/getRelayerTxHash';
-        let data = {
-          from: self.addFrom,
-          to: self.addTo,
-          value: self.sendAmount,
-          message: self.message
-        };
+        var nanjTrans = nanj.transaction;
 
-        axios['post'](uri, data)
-          .then(response => {
-            if (typeof response.data === 'object') {
+        nanjTrans.getRelayerTxHash(self.addFrom, self.addTo, self.sendAmount, self.message).then(function(txHash) {
+            let data = txHash.data
+            let hash = txHash.hash
+            let destinationAddress = txHash.destinationAddress
 
-              let hashSign = self.utilSign(response.data.data, response.data.hash, privKey, response.data.destinationAddress)
+            let dataHash = nanjTrans.getHashSign(data, hash, privKey, destinationAddress)
 
-              let _uri = '/api/tx/webRelayTx'
-              let _dataTx = {
-                hash: hashSign,
-                message: self.message
+            nanjTrans.send(dataHash).then(function(response) {
+              if ((typeof response != 'undefined') && (response.statusCode == 200)) {
+                self.txHash = response.txHash
+                self.txHashLink = self.$root.HTTP_TX+'/tx/'+self.txHash
+
+                self.errors = [];
+                self.password = null;
+                self.sendToken = false;
+                self.cfrPasspharse = false;
+                self.addTo = null;
+                self.message = null;
+                self.sendAmount = null;
+                self.txsSuccess = true;
+
+                self.pageLoading = false
+              } else {
+                console.log(response)
+                self.transactionError();
               }
-
-              return axios['post'](_uri, _dataTx);
-            }
+            }, function(err) {
+              self.transactionError();
+            })
+            
+          }, function(err) {
+            self.transactionError();
           })
-          .then(res => {
-            if (typeof res.data === 'object') {
-              self.txHash = res.data.txHash
-              self.txHashLink = self.$root.HTTP_TX+'/tx/'+self.txHash
 
-              self.errors = [];
-              self.password = null;
-              self.sendToken = false;
-              self.cfrPasspharse = false;
-              self.addTo = null;
-              self.message = null;
-              self.sendAmount = null;
-              self.txsSuccess = true;
-
-              self.pageLoading = false
-            }
-          })
-          .catch(error => {
-
-            console.log(error)
-
-            self.pageLoading = false;
-            self.submitted = false;
-            self.sendToken = true;
-            self.cfrPasspharse = false;
-            if (typeof error.res.data === 'object') {
-                self.errors = _.flatten(_.toArray(error.res.data));
-            } else {
-                self.errors = ['Something went wrong. Please try again.'];
-            }
-          });
       },
-      utilSign(data, hash, privKey, destinationAddress) {
-        let sig = utils.ecsign(new Buffer(utils.stripHexPrefix(hash), 'hex'), new Buffer(privKey, 'hex'))
-
-        let retVal = {}
-        retVal.r = '0x' + sig.r.toString('hex')
-        retVal.s = '0x' + sig.s.toString('hex')
-        retVal.v = sig.v //Q: Why is this not converted to hex?
-        retVal.data = data
-        retVal.hash = hash
-        retVal.dest = destinationAddress
-        return retVal
+      transactionError() {
+        this.pageLoading = false;
+        this.submitted = false;
+        this.sendToken = true;
+        this.cfrPasspharse = false;
+        this.errors = ['Transaction went wrong. Please try again.'];
       }
     } //end methods
   }

@@ -1,7 +1,21 @@
 const webpack = require('webpack')
 const path = require('path')
-module.exports = {
 
+var fs = require('fs');
+
+// var nodeModules = {};
+// fs.readdirSync('node_modules')
+//   .filter(function(x) {
+//     return ['.bin'].indexOf(x) === -1;
+//   })
+//   .forEach(function(mod) {
+//     nodeModules[mod] = 'commonjs ' + mod;
+//   });
+
+module.exports = {
+  node: {
+    fs: "empty"
+  },
   entry: './public/src/main.js',
   output: {
     filename: './public/build/bundle.js'
@@ -34,7 +48,7 @@ module.exports = {
         }
       },
       {
-        test: /\.js$/,
+        test: /\.(js|jsx)$/,
         loader: 'babel-loader',
         exclude: /node_modules/
       },
