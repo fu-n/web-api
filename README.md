@@ -1,5 +1,5 @@
 # NANJ WEB-API
-
+This software is released under the MIT License, see [License_ja](https://github.com/NANJ-COIN/web-api/blob/master/License_ja.txt) or [License_en](https://github.com/NANJ-COIN/web-api/blob/master/License_en.txt).
 Create or Import your wallet. And make NANJ Transaction.
 
 ## Getting Started
