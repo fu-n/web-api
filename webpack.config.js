@@ -20,7 +20,7 @@ module.exports = {
   output: {
     filename: './public/build/bundle.js'
   },
-  watch: true,
+  watch: false,
   resolve: {
     alias: {
       vue: './vue.js'
