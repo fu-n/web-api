@@ -104,7 +104,7 @@
         accountActived = _keyStore.address
       }
 
-      return {
+      let _data = {
         is_home: true,
         is_create: false,
         is_import: false,
@@ -113,6 +113,13 @@
         accounts: accounts,
         accountActived: accountActived
       }
+
+      if (_data.accountActived.length) {
+        _data.is_home = false
+        _data.is_account = true
+      }
+
+      return _data
     },
     mounted: function () {
       document.addEventListener("keydown", (e) => {
