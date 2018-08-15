@@ -1,4 +1,5 @@
-# NANJ SDK
+# NANJ WEB-API
+This software is released under the MIT License, see [License_ja](https://github.com/NANJ-COIN/web-api/blob/master/License_ja.txt) or [License_en](https://github.com/NANJ-COIN/web-api/blob/master/License_en.txt).
 
 Create or Import your wallet. And make NANJ Transaction.
 
@@ -44,6 +45,57 @@ node .
 ```
 npm run test
 ```
+
+## Developer account
+OAuth2 enables application developers to build applications that utilize authorise and data from the NanjRelayTx API. We support the registration and create App_ID & Secret_Key at [Developers portal](http://developers.staging.nanjcoin.com/login).
+
+### 1. {{API_ENDPOINT}}/authorise
+
+| API authorise example                           |
+| :---:                                           |
+| GET: https://staging.nanjcoin.com/api/authorise |
+
+- Header Parameters. 
+
+    | Key          | Value                                      | Description                   |
+    | ------------ | ------------------------------------------ | ----------------------------- |
+    | Client-ID    | 61415410861056936449                       | your application's app id     |
+    | Secret-Key   | i7XJTOjAcEFu2YowtF49U07bMdRAK9gIQRrBfCAL   | your application's secret key |
+
+
+- Response data.
+    - HTTP status: 200
+    - Response body
+```
+{                                                                 
+    "status_code": 200,
+    "messages": "success",
+    "data": {
+        "client_id": "61415410861056936449",
+        "name": "app_name",
+        "eth_address": "0x000000000000000000000000000000000000000",
+        "status": 0,
+        "version": "1",
+        "smartContracts": {
+            "metaNanjManager": "0x000000000000000000000000000000000000000",
+            "txRelay": "0x000000000000000000000000000000000000000"
+        },
+        "supportedERC20": [
+            {
+                "id": 1,
+                "name": "NANJCOIN",
+                "address": "0x000000000000000000000000000000000000000"
+            }
+        ],
+        "appHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "env": "ropsten",
+        "chainId": "3"
+    }
+} 
+```
+
+## Update environment setting
+You need to update environment ([.env.js](https://github.com/NANJ-COIN/web-api/blob/master/.env.js)) with the information your got from [Developers portal](http://developers.staging.nanjcoin.com/login). and {{API_ENDPOINT}}/authorise
 
 ### Break down into end to end tests
 
@@ -229,8 +281,7 @@ For the versions available, see the [tags on this repository](https://github.com
 
 ## Authors
 
-* **NANJ TEAM** [NANJ](https://nanjcoin.com/)
+* **NANJ TEAM** [NANJ](https://nanjcoin.com/), support@nanjcoin.com
 
 ## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+[LICENSE](https://nanjcoin.com/sdk)
