@@ -1,6 +1,4 @@
 # NANJ WEB-API
-This software is released under the MIT License, see [License_ja](https://github.com/NANJ-COIN/web-api/blob/master/License_ja.txt) or [License_en](https://github.com/NANJ-COIN/web-api/blob/master/License_en.txt).
-
 Create or Import your wallet. And make NANJ Transaction.
 
 ## Getting Started
@@ -13,17 +11,17 @@ A step by step series that tell you how to get a development env running
 
 Clone project from Git repository
 ```
-/directory$ git clone https://github.com/NANJ-COIN/web-api web-api
+/directory$ git clone https://github.com/NANJ-COIN/web-api.git web-api
+```
+
+Install all package
+```
+npm install
 ```
 
 Set config 
 ```
 /directory/web-api$ cp .env.example .env
-```
-
-Install all package
-```
-npm run install nanj-api --save
 ```
 
 Run command to build view files
@@ -94,9 +92,11 @@ OAuth2 enables application developers to build applications that utilize authori
 } 
 ```
 
-## Update environment setting
-You need to update environment ([.env.js](https://github.com/NANJ-COIN/web-api/blob/master/.env.js)) with the information your got from [Developers portal](http://developers.staging.nanjcoin.com/login). and {{API_ENDPOINT}}/authorise
-
+## update environment
+```
+/directory/web-api$ vim .env
+```
+You need to update environment with the information your got from [Developers portal](http://developers.staging.nanjcoin.com/login). and {{API_ENDPOINT}}/authorise
 ### Break down into end to end tests
 
 Run project with link. Ex: http://localhost:your_port
@@ -131,7 +131,7 @@ Account
 ## API
 
 ### Account & Wallet
-
+API_ENDPOINT is http://localhost:your_port
 #### 1. {{API_ENDPOINT}}/api/wallet/create
 
 | API Create Wallet.                              |
@@ -242,27 +242,54 @@ Account
 ```
 
 ### Transaction
-
+API_ENDPOINT is https://staging.nanjcoin.com 
+####  Create transaction
 #### 1. {{API_ENDPOINT}}/api/tx/relayTx
 
 | API NANJ Transaction.                           |
 | :---:                                           |
-| POST: {{API_ENDPOINT}}/api/tx/relayTx        |
+| POST: {{API_ENDPOINT}}/api/relayTx           |
 
 - Header Parameters. 
 
     | Key          | Value                                      | Description                   |
     | ------------ | ------------------------------------------ | ----------------------------- |
     | Content-Type | application/json                           | Setting input data type       |
+    | Client-ID    | 61415410861056936449                       | your application's app id     |
+    | Secret-Key   | i7XJTOjAcEFu2YowtF49U07bMdRAK9gIQRrBfCAL   | your application's secret key |
+    
+- Body Parameters.
+  </br>data of create transaction api you need use  npm nanjs package to generate body parameters data
+    ```
+    // It's a async function
+    // make transaction
+    var from = '0xe79c03e29ee86c1d0af6053737dccb029402d0f3'
+    var privateKey = '******************************************************'
+    var to = '0xfce1759a46647adfe4f9564320631c4f0a90deba'
+    var amount = 5
+    var message = 'nanj transaction'
+    let nanjAddress = nanjs.wallet.walletCheck(address)
+    nanjs.transaction.getRelayerTxHash(from, nanjAddress, amount, message).then(function(txHash) {
+        let data = txHash.data
+        let hash = txHash.hash
+        let destinationAddress = txHash.destinationAddress
 
-- Body Parameters. 
+        let body_parameters = nanjs.transaction.getHashSign(data, hash, privateKey, destinationAddress)
+        
+      }, function(err) {
+        console.log(err)
+      })
+    ```
 
-    | Key          | Value                                      |
-    | ------------ | ------------------------------------------ |
-    | from         | 0x7b4322b9abe447ce86faa6121b35c84ec36945ad |
-    | privKey      | ****************************************** |
-    | to           | 0x4c96b7a6304400ac656296c58388f3a79e7f5d98 |
-    | value        | 300000000                                  |
+    | Key      | Value                                                              | Description                   |
+    | -------- | ------------------------------------------------------------------ | ----------------------------- |
+    | dest     | 0x00000000000000000000000000000000000000000000000000000000000000   |                               |
+    | hash     | 0x00000000000000000000000000000000000000000000000000000...000000   |                               |
+    | data     | 0x00000000000000000000000000000000000000000000000000000...000000   |                               |
+    | v        | 0000000                                                            |                               |
+    | r        | 0x00000000000000000000000000000000000000000000000000000000000000   |                               |
+    | s        | 0x00000000000000000000000000000000000000000000000000000000000000   |                               |
+    | nonce    | 0000000000000000000000000000000000000000000000000000000000000000   |                               |
 
 
 - Response data.
@@ -274,7 +301,133 @@ Account
     "txHash": "0x2237bef268e080835f62bae4c0aee858a8212c05e29945d1e02a354427f252e0"
 }
 ```
+#### Get list history transactions
+#### 2. {{API_ENDPOINT}}/api/tx/list/{address}?limit=10&page=1&order_by=desc
 
+| API NANJ Transaction.                                                                                       |
+| :---:                                                                                                       |
+| POST: {{API_ENDPOINT}}/api/tx/list/0xb8d5c2b945721f1e37a03c946ca2497f9e2f9775?limit=10&page=1&order_by=desc |
+
+- Header Parameters. 
+
+    | Key          | Value                                      | Description                   |
+    | ------------ | ------------------------------------------ | ----------------------------- |
+    | Content-Type | application/json                           | Setting input data type       |
+    | Client-ID    | 61415410861056936449                       | your application's app id     |
+    | Secret-Key   | i7XJTOjAcEFu2YowtF49U07bMdRAK9gIQRrBfCAL   | your application's secret key |
+    
+- URL Parameters.
+    
+    | Key          | Value                                      | Description                   |
+    | ------------ | ------------------------------------------ | ----------------------------- |
+    | address      | 0xb8d5c2b945721f1e37a03c946ca2497f9e2f9775 | nanjcoin address              |
+    
+- Query Parameters. 
+
+    | Key          | Value                                      | Description                               |
+    | ------------ | ------------------------------------------ | -----------------------------             |
+    | limit        | 10                                         | number of limit transactions in page      |
+    | page         | 1                                          | Number of page                            |
+    | order_by     | ASC or DESC                                | Order_by is used to sort the result-set in ascending or descending order. |
+
+- Response data.
+    - HTTP status: 200
+    - Response body
+
+```
+{
+    "statusCode": 200,
+    "messages": "request success",
+    "data": {
+        "total": 85,
+        "limit": "10",
+        "page": "1",
+        "max_page": 9,
+        "items": [
+            {
+                "id": 262,
+                "TxHash": "0x903e93a85dd4b5cf4a9d2f194cb464c228025b3797f033bb20ce174db3da6728",
+                "status": 0,
+                "created_at": "2018-07-31 13:08:23",
+                "symbol": "NANJT",
+                "from": "0xb8d5c2b945721f1e37a03c946ca2497f9e2f9775",
+                "to": "0xd91ca323233e1571c188d37d8c93f8ddbeb3b2ee",
+                "value": "12500000000",
+                "message": "",
+                "tx_fee": "125000000",
+                "time_stamp": 1533010103
+            },
+            {
+                "id": 237,
+                "TxHash": "0x56df4b41a64502e8a5fdf46c0c2ad01fe24715a4ad5982ae7870cc65a426a10d",
+                "status": 0,
+                "created_at": "2018-07-30 19:42:03",
+                "symbol": "NANJT",
+                "from": "0xb8d5c2b945721f1e37a03c946ca2497f9e2f9775",
+                "to": "0x4d651145931aa3d421d25d186d9eead146d8d334",
+                "value": "15000000000",
+                "message": "",
+                "tx_fee": "150000000",
+                "time_stamp": 1532947323
+            },
+            ...
+        ]
+    }
+}
+```
+####  Get nanj rate
+#### 3. {{API_ENDPOINT}}/api/coin/nanjcoin/currency/{currency}
+
+| API NANJ Transaction.                           |
+| :---:                                           |
+| POST: {{API_ENDPOINT}}/api/coin/nanjcoin/currency/jpy       |
+
+- Header Parameters. 
+
+    | Key          | Value                                      | Description                   |
+    | ------------ | ------------------------------------------ | ----------------------------- |
+    | Content-Type | application/json                           | Setting input data type       |
+    | Client-ID    | 61415410861056936449                       | your application's app id     |
+    | Secret-Key   | i7XJTOjAcEFu2YowtF49U07bMdRAK9gIQRrBfCAL   | your application's secret key |
+    
+- URL Parameters.
+    
+    | Key          | Value                                      | Description                   |
+    | ------------ | ------------------------------------------ | ----------------------------- |
+    | currency     | jpy or usd                                 | currency symble               |
+    
+
+
+- Response data.
+    - HTTP status: 200
+    - Response body
+
+```
+{
+    "statusCode": 200,
+    "message": "success",
+    "data": {
+        "id": "nanjcoin",
+        "symbol": "nanj",
+        "name": "NANJCOIN",
+        "image": "https://assets.coingecko.com/coins/images/3424/small/FDGC.png?1521621671",
+        "current_price": 0.100654390871852,
+        "market_cap": 1948859199.48791,
+        "total_volume": 7387551.87433715,
+        "high_24h": 0.120922987721231,
+        "low_24h": 0.0993159837261435,
+        "price_change_24h": "-0.000105617924003182",
+        "price_change_percentage_24h": "-10.4875135111615",
+        "market_cap_change_24h": "-2044962.5797893",
+        "market_cap_change_percentage_24h": "-10.4875135111618",
+        "circulating_supply": "19361889557.0",
+        "ath": 0.519721665124315,
+        "ath_change_percentage": -79.2897141816895,
+        "ath_date": "2018-04-04T07:20:57.493Z",
+        "roi": null
+    }
+}
+```
 ## Versioning
 
 For the versions available, see the [tags on this repository](https://github.com/NANJ-COIN/web-sdk/tags). 
@@ -284,4 +437,5 @@ For the versions available, see the [tags on this repository](https://github.com
 * **NANJ TEAM** [NANJ](https://nanjcoin.com/), support@nanjcoin.com
 
 ## License
-[LICENSE](https://nanjcoin.com/sdk)
+please read our license at this link. [LICENSE](https://nanjcoin.com/sdk)
+you can change Language JP/EN
