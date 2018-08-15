@@ -48,6 +48,7 @@
   import $ from 'jquery';
   import _ from 'lodash';
   import axios from 'axios';
+  import nanj from 'nanjs';
 
   export default {
     data() {
@@ -61,64 +62,55 @@
         pageLoading: true,
         sender: '0x'+keyJson.address,
         nanjAddress: localStorage.getItem("nanjAddress"),
+        transAdd: '',
         maxPage: 0,
         curPage: 0,
       }
     },
     mounted() {
-      const self = this
-
+      const self = this 
       let page = 1
-      let _urlSenderTrans = self.doURLGetTx(self.sender, page)
-      let _urlNANJTrans = self.doURLGetTx(self.nanjAddress, page)
 
-      const headers = { 'headers': { 'Client-ID': self.$root.CLIENT_ID, 'Secret-Key': self.$root.SECRET_KEY } }
+      nanj.transaction.history(self.sender, page).then(response => {
+        if (response.statusCode === 200) {
+          const data = response.data
+          if (data.total > 0) {
+            self.transAdd = self.sender
+            self.maxPage = parseInt(data.max_page)
+            self.curPage = parseInt(data.page)
+            self.transactions = data.items
+            self.pageLoading = false
+            self.checkLoadmore()
+            return
+          }
 
-      axios.get(_urlSenderTrans, headers).then(response => {
-            const data = response.data.data
-            if (data.total > 0) {
-              self.maxPage = parseInt(data.max_page)
-              self.curPage = parseInt(data.page)
-              // let limit = data.limit
-
-              self.transactions = data.items
-              self.pageLoading = false
-              self.getTxLink = self.sender
-              self.checkLoadmore()
-              return
-            }
-
-            if (self.nanjAddress.length) {
-              axios.get(_urlNANJTrans, headers).then(res => {
-                const data = res.data.data 
-                if (data.total > 0) {
-                  self.maxPage = parseInt(data.max_page)
-                  self.curPage = parseInt(data.page)
-                  // let limit = data.limit
-
-                  self.transactions = data.items
-                  self.pageLoading = false
-                  self.getTxLink = self.nanjAddress
-                  self.checkLoadmore()
-                  return
-                }
-
-                self.checkLoadmore()
+          if (self.nanjAddress.length) {
+            nanj.transaction.history(self.nanjAddress, page).then(res => {
+              const data = res.data 
+              if (data.total > 0) {
+                self.transAdd = self.nanjAddress
+                self.maxPage = parseInt(data.max_page)
+                self.curPage = parseInt(data.page)
+                self.transactions = data.items
                 self.pageLoading = false
-              })
-            } else {
+                self.checkLoadmore()
+                return
+              }
+
+              self.checkLoadmore()
               self.pageLoading = false
-              self.getTxLink = self.sender
-              return
-            }
-          })
+            })
+          }
+        }
+
+        self.pageLoading = false
+      }, function(err) {
+        self.pageLoading = false
+      })
     },
     methods: {
       doMath(index) {
         return index+1
-      },
-      doURLGetTx(address, page) {
-        return 'https://'+this.$root.NANJ_HOST+'/api/tx/list/'+address+'?limit=10&page='+page+'&order_by=desc'
       },
       txHashLink(hash) {
         return this.$root.HTTP_TX+'/tx/'+hash
@@ -140,11 +132,9 @@
 
         let getPage = parseInt(self.curPage)+1
         self.curPage = getPage
-        let _url = self.doURLGetTx(self.getTxLink, getPage)
-        const headers = { 'headers': { 'Client-ID': self.$root.CLIENT_ID, 'Secret-Key': self.$root.SECRET_KEY } }
 
-        axios.get(_url, headers).then(res => {
-              const data = res.data.data 
+        nanj.transaction.history(self.transAdd, page).then(res => {
+              const data = res.data 
               if (data.total > 0) {
 
                 if (data.items.length) {
