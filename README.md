@@ -51,7 +51,7 @@ OAuth2 enables application developers to build applications that utilize authori
 
 | API authorise example                           |
 | :---:                                           |
-| GET: https://staging.nanjcoin.com/api/authorise |
+| POST: https://staging.nanjcoin.com/api/authorise |
 
 - Header Parameters. 
 
@@ -306,7 +306,7 @@ API_ENDPOINT is https://staging.nanjcoin.com
 
 | API NANJ Transaction.                                                                                       |
 | :---:                                                                                                       |
-| POST: {{API_ENDPOINT}}/api/tx/list/0xb8d5c2b945721f1e37a03c946ca2497f9e2f9775?limit=10&page=1&order_by=desc |
+| GET: {{API_ENDPOINT}}/api/tx/list/0xb8d5c2b945721f1e37a03c946ca2497f9e2f9775?limit=10&page=1&order_by=desc |
 
 - Header Parameters. 
 
@@ -380,7 +380,7 @@ API_ENDPOINT is https://staging.nanjcoin.com
 
 | API NANJ Transaction.                           |
 | :---:                                           |
-| POST: {{API_ENDPOINT}}/api/coin/nanjcoin/currency/jpy       |
+| GET: {{API_ENDPOINT}}/api/coin/nanjcoin/currency/jpy       |
 
 - Header Parameters. 
 
