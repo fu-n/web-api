@@ -3,7 +3,7 @@ services:
   nanj:
     image: web-api
     build: ./
-    command: bash -c "ln -s /node_modules /app/node_modules; node index.js"
+    command: bash -c "ln -fs /node_modules /app/node_modules; npm run build; node index.js"
     volumes:
       - ./:/app
     ports:
