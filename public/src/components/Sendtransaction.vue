@@ -143,31 +143,32 @@
             let hash = txHash.hash
             let destinationAddress = txHash.destinationAddress
 
-            let dataHash = nanjTrans.getHashSign(data, hash, privKey, destinationAddress)
+            nanjTrans.getHashSign(data, hash, privKey, destinationAddress).then(function(dataHash) {
+              nanjTrans.send(dataHash).then(function(response) {
+                if ((typeof response != 'undefined') && (response.statusCode == 200)) {
+                  self.txHash = response.txHash
+                  self.txHashLink = self.$root.HTTP_TX+'/tx/'+self.txHash
 
-            nanjTrans.send(dataHash).then(function(response) {
-              if ((typeof response != 'undefined') && (response.statusCode == 200)) {
-                self.txHash = response.txHash
-                self.txHashLink = self.$root.HTTP_TX+'/tx/'+self.txHash
+                  self.errors = [];
+                  self.password = null;
+                  self.sendToken = false;
+                  self.cfrPasspharse = false;
+                  self.addTo = null;
+                  self.message = null;
+                  self.sendAmount = null;
+                  self.txsSuccess = true;
 
-                self.errors = [];
-                self.password = null;
-                self.sendToken = false;
-                self.cfrPasspharse = false;
-                self.addTo = null;
-                self.message = null;
-                self.sendAmount = null;
-                self.txsSuccess = true;
-
-                self.pageLoading = false
-              } else {
-                console.log(response)
+                  self.pageLoading = false
+                } else {
+                  console.log(response)
+                  self.transactionError();
+                }
+              }, function(err) {
                 self.transactionError();
-              }
+              })
             }, function(err) {
               self.transactionError();
             })
-            
           }, function(err) {
             self.transactionError();
           })
