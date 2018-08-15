@@ -22,7 +22,7 @@ Set config
 
 Install all package
 ```
-npm run nanj-api
+npm run install nanj-api --save
 ```
 
 Run command to build view files
