@@ -12,17 +12,17 @@ A step by step series that tell you how to get a development env running
 
 Clone project from Git repository
 ```
-git clone https://github.com/NANJ-COIN/web-sdk
-```
-
-Install all package
-```
-npm install
+/directory$ git clone https://github.com/NANJ-COIN/web-api web-api
 ```
 
 Set config 
 ```
-cp .env.example .env
+/directory/web-api$ cp .env.example .env
+```
+
+Install all package
+```
+npm run nanj-api
 ```
 
 Run command to build view files
