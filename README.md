@@ -16,7 +16,7 @@ Clone project from Git repository
 
 Install all package
 ```
-npm install
+/directory/web-api$ npm install
 ```
 
 Set config 
@@ -26,22 +26,22 @@ Set config
 
 Run command to build view files
 ```
-npm run build
+/directory/web-api$ npm run build
 ```
 Or
 ```
-npm run build --watch
+/directory/web-api$ npm run build --watch
 ```
 for development
 
 Start server nodejs
 ```
-node .
+/directory/web-api$ node .
 ```
 
 ## Running the tests
 ```
-npm run test
+/directory/web-api$ npm run test
 ```
 
 ## Developer account
