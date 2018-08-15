@@ -24,7 +24,7 @@
           <div class="card-body">
             <p>From: {{ item.from }}</p>
             <p>To: {{ item.to }}</p>
-            <p>Amount: {{ item.value }}</p>
+            <p>Amount: {{ formatAmount(item.value) }}</p>
             <p>Message: {{ item.message }}</p>
             <p>Created At: {{ item.created_at }}</p>
           </div>
@@ -96,14 +96,10 @@
                 self.checkLoadmore()
                 return
               }
-
-              self.checkLoadmore()
               self.pageLoading = false
             })
           }
         }
-
-        self.pageLoading = false
       }, function(err) {
         self.pageLoading = false
       })
@@ -111,6 +107,11 @@
     methods: {
       doMath(index) {
         return index+1
+      },
+      formatAmount(value) {
+        if (!value.length) 
+          return value
+        return value.slice(0, value.length-8)
       },
       txHashLink(hash) {
         return this.$root.HTTP_TX+'/tx/'+hash
