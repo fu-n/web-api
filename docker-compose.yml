@@ -1,6 +1,6 @@
 version: '3.4'
 services:
-  web-api:
+  nanj:
     image: web-api
     build: ./
     command: bash -c "ln -s /node_modules /app/node_modules; node index.js"
