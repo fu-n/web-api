@@ -49,7 +49,7 @@
   import _ from 'lodash';
   import axios from 'axios';
   import assign from 'object-assign'
-  import nanj from  'nanj-web-api-sdk'
+  import nanj from 'nanjs'
 
   export default {
     data() {

@@ -7,7 +7,7 @@ let middleware = {}
 middleware.mnemonic = require('../middleware/validate-mnemonic.js');
 middleware.walletImport = require('../middleware/validate-wallet-import.js');
 
-const nanj = require('nanj-web-api-sdk')
+const nanj = require('nanjs')
 const nanjWallet = nanj.wallet
 
 router.get('/wallet/check', function(req, res, next) {
